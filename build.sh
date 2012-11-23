@@ -8,8 +8,8 @@ git_project_address="https://abf.rosalinux.ru/import/qtiplot.git"
 repo="http://mirror.rosalinux.com/rosa/rosa2012.1/repository/x86_64/"
 distrib_type="rosa2012.1"
 
-urpmi.addmedia $distrib_type --distrib $repo
-sudo urpmi git-core --auto --force
+# urpmi.addmedia $distrib_type --distrib $repo
+sudo urpmi git-core --auto
 
 git clone $git_project_address project
 cd project
