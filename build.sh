@@ -6,8 +6,9 @@ commit_hash="9272c173c517178b5c039c4b196c719b472147a7"
 git_project_address="https://abf.rosalinux.ru/import/qtiplot.git"
 
 repo="http://mirror.rosalinux.com/rosa/rosa2012.1/repository/x86_64/"
+distrib_type="rosa2012.1"
 
-urpmi.addmedia --distrib repo
+urpmi.addmedia $distrib_type --distrib $repo
 urpmi git-core
 
 git clone $git_project_address project
