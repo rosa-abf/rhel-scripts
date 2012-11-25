@@ -9,7 +9,7 @@ repo="http://mirror.rosalinux.com/rosa/rosa2012.1/repository/x86_64/"
 distrib_type="rosa2012.1"
 
 # urpmi.addmedia $distrib_type --distrib $repo
-sudo urpmi git-core --auto
+sudo urpmi git-core python-lxml python-rpm mock-urpm rpm-build python-gitpython --auto
 
 git clone $git_project_address project
 cd project
