@@ -31,6 +31,7 @@ mkdir $archives_path
 mkdir $results_path
 
 # Mount tmpfs
+mkdir $project_path
 sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $project_path
 
 git clone $git_project_address $project_path
