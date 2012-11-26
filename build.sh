@@ -2,11 +2,16 @@
 
 echo 'rpm-build-script'
 
-commit_hash="9272c173c517178b5c039c4b196c719b472147a7"
-git_project_address="https://abf.rosalinux.ru/import/qtiplot.git"
+git_project_address="$GIT_PROJECT_ADDRESS"
+# git_project_address="https://abf.rosalinux.ru/import/qtiplot.git"
+commit_hash="$COMMIT_HASH"
+# commit_hash="9272c173c517178b5c039c4b196c719b472147a7"
 
-repo="http://mirror.rosalinux.com/rosa/rosa2012.1/repository/x86_64/"
-distrib_type="rosa2012.1"
+# repo="http://mirror.rosalinux.com/rosa/rosa2012.1/repository/x86_64/"
+# distrib_type="rosa2012.1"
+
+echo $git_project_address
+echo $commit_hash
 
 project_path="/home/vagrant/project"
 archives_path="/home/vagrant/archives"
@@ -25,7 +30,7 @@ sudo urpmi ruby --auto
 mkdir $archives_path
 mkdir $results_path
 
-# Create tmpfs
+# Mount tmpfs
 sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $project_path
 
 git clone $git_project_address $project_path
@@ -36,7 +41,8 @@ git checkout $commit_hash
 python $rpm_build_script_path/changelog.py $project_path
 ruby $rpm_build_script_path/abf_yml.rb -p $project_path
 
-
+# Umount tmpfs
+sudo umount $project_path
 
 # :plname => save_to_platform.name,
 # :arch => arch.name,
