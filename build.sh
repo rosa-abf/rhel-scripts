@@ -34,7 +34,7 @@ git checkout $commit_hash
 
 
 python $rpm_build_script_path/changelog.py $project_path
-ruby $rpm_build_script_path/abf_yml.rb $project_path
+ruby $rpm_build_script_path/abf_yml.rb -p $project_path
 
 
 
