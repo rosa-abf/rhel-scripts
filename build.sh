@@ -20,6 +20,7 @@ sudo urpmi python-rpm --auto
 # sudo urpmi mock-urpm --auto
 sudo urpmi rpm-build --auto
 sudo urpmi python-gitpython --auto
+sudo urpmi ruby --auto
 
 mkdir $archives_path
 mkdir $results_path
@@ -31,7 +32,9 @@ git clone $git_project_address $project_path
 cd $project_path
 git checkout $commit_hash
 
+
 python $rpm_build_script_path/changelog.py $project_path
+ruby $rpm_build_script_path/abf_yml.rb $project_path
 
 
 
