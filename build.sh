@@ -85,12 +85,14 @@ rpm_path=$archives_path/RPM
 mkdir $rpm_path
 
 mock_command="mock"
+config_dir=/etc/mock/
 if [ "$distrib_type" == 'mdv' ] ; then
   mock_command="mock-urpm"
+  config_dir=/etc/mock-urpm/
 fi
 
 # Build src.rpm
-$mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir /etc/mock-urpm/ -r $distrib_type-$arch
+$mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir -r $distrib_type-$arch
 
 # Build rpm
 cd $src_rpm_path
