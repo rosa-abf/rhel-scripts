@@ -9,6 +9,11 @@ commit_hash="$COMMIT_HASH"
 
 # repo="http://mirror.rosalinux.com/rosa/rosa2012.1/repository/x86_64/"
 # distrib_type="rosa2012.1"
+distrib_type="$DISTRIB_TYPE"
+# distrib_type="mdv"
+arch="$ARCH"
+# arch="x86_64"
+
 
 echo $git_project_address
 echo $commit_hash
@@ -75,9 +80,19 @@ mv $project_path/* $tmpfs_path/SOURCES/
 
 # Buildsrpm
 cd $archives_path
-sudo mock --buildsrpm --spec=$tmpfs_path/SPECS/$spec_name --sources=$tmpfs_path/SOURCES/
-sudo mock src.rpm
--
+if [ $distrib_type -eq 'mdv' ]
+then
+  sudo mock-urpm --buildsrpm --spec=$tmpfs_path/SPECS/$spec_name --sources=$tmpfs_path/SOURCES/
+  sudo mock-urpm src.rpm  
+else
+  sudo mock --buildsrpm --spec=$tmpfs_path/SPECS/$spec_name --sources=$tmpfs_path/SOURCES/
+  sudo mock src.rpm
+fi
+
+# Save results
+mv $tmpfs_path/SPECS $archives_path/
+mv $tmpfs_path/SOURCES $archives_path/
+
 # Umount tmpfs
 cd /
 sudo umount $tmpfs_path
