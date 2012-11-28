@@ -3,9 +3,9 @@
 echo 'rpm-build-script'
 
 git_project_address="$GIT_PROJECT_ADDRESS"
-# git_project_address="https://abf.rosalinux.ru/import/qtiplot.git"
+# git_project_address="https://abf.rosalinux.ru/import/plasma-applet-stackfolder.git"
 commit_hash="$COMMIT_HASH"
-# commit_hash="9272c173c517178b5c039c4b196c719b472147a7"
+# commit_hash="bfe6d68cc607238011a6108014bdcfe86c69456a"
 
 # repo="http://mirror.rosalinux.com/rosa/rosa2012.1/repository/x86_64/"
 # distrib_type="rosa2012.1"
@@ -25,14 +25,14 @@ project_path="$tmpfs_path/project"
 rpm_build_script_path=`pwd`
 
 # urpmi.addmedia $distrib_type --distrib $repo
-sudo urpmi git-core --auto
-sudo urpmi python-lxml --auto
-sudo urpmi python-rpm --auto
+# sudo urpmi git-core --auto
+# sudo urpmi python-lxml --auto
+# sudo urpmi python-rpm --auto
 # sudo urpmi mock-urpm --auto
-sudo urpmi mock --auto
-sudo urpmi rpm-build --auto
-sudo urpmi python-gitpython --auto
-sudo urpmi ruby --auto
+# sudo urpmi mock --auto
+# sudo urpmi rpm-build --auto
+# sudo urpmi python-gitpython --auto
+# sudo urpmi ruby --auto
 
 mkdir $archives_path
 mkdir $results_path
@@ -62,13 +62,11 @@ mv $project_path/*.spec $tmpfs_path/SPECS/
 cd $tmpfs_path/SPECS
 x=`ls -1 | grep '.spec$' | wc -l | sed 's/^ *//' | sed 's/ *$//'`
 spec_name=`ls -1 | grep '.spec$'`
-if [ $x -eq '0' ]
-then
+if [ $x -eq '0' ] ; then
   echo "There are no spec files in repository."
   exit 1
 else
-  if [ $x -ne '1' ]
-  then
+  if [ $x -ne '1' ] ; then
     echo "There are more then one spec files in repository."
     exit 1
   fi
@@ -78,16 +76,29 @@ fi
 mkdir $tmpfs_path/SOURCES
 mv $project_path/* $tmpfs_path/SOURCES/
 
-# Buildsrpm
+# Init folders for building src.rpm
 cd $archives_path
-if [ $distrib_type -eq 'mdv' ]
-then
-  sudo mock-urpm --buildsrpm --spec=$tmpfs_path/SPECS/$spec_name --sources=$tmpfs_path/SOURCES/
-  sudo mock-urpm src.rpm  
-else
-  sudo mock --buildsrpm --spec=$tmpfs_path/SPECS/$spec_name --sources=$tmpfs_path/SOURCES/
-  sudo mock src.rpm
+src_rpm_path=$archives_path/SRC_RPM
+mkdir $src_rpm_path
+
+rpm_path=$archives_path/RPM
+mkdir $rpm_path
+
+mock_command="mock"
+if [ "$distrib_type" == 'mdv' ] ; then
+  mock_command="mock-urpm"
 fi
+
+# Build src.rpm
+$mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir /etc/mock-urpm/ -r $distrib_type-$arch
+
+# Build rpm
+cd $src_rpm_path
+src_rpm_name=`ls -1 | grep 'src.rpm$'`
+$mock_command $src_rpm_name --resultdir $rpm_path
+
+# Save exit code
+rc=$?
 
 # Save results
 mv $tmpfs_path/SPECS $archives_path/
@@ -96,13 +107,10 @@ mv $tmpfs_path/SOURCES $archives_path/
 # Umount tmpfs
 cd /
 sudo umount $tmpfs_path
+rm -rf $tmpfs_path 
 
-# :plname => save_to_platform.name,
-# :arch => arch.name,
-# :bplname => (save_to_platform_id == build_for_platform_id ? '' : build_for_platform.name),
-# :update_type => update_type,
-# :build_requires => build_requires,
-# :id => id,
-# :include_repos => include_repos_hash,
-# :priority => priority,
-# :git_project_address => project.git_project_address
+# Check exit code after build
+if [[ $rc != 0 ]] ; then
+  echo "Build failed: mock-urpm problem"
+  exit $rc
+fi
