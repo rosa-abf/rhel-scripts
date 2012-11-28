@@ -3,9 +3,14 @@
 echo 'rpm-build-script'
 
 git_project_address="$GIT_PROJECT_ADDRESS"
-# git_project_address="https://abf.rosalinux.ru/import/plasma-applet-stackfolder.git"
 commit_hash="$COMMIT_HASH"
+# mdv example:
+# git_project_address="https://abf.rosalinux.ru/import/plasma-applet-stackfolder.git"
 # commit_hash="bfe6d68cc607238011a6108014bdcfe86c69456a"
+
+# rhel example:
+# git_project_address="https://abf.rosalinux.ru/server/gnome-settings-daemon.git"
+# commit_hash="fbb2549e44d97226fea6748a4f95d1d82ffb8726"
 
 # repo="http://mirror.rosalinux.com/rosa/rosa2012.1/repository/x86_64/"
 # distrib_type="rosa2012.1"
