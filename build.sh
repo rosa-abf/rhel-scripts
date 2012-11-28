@@ -32,7 +32,7 @@ mkdir $archives_path
 mkdir $results_path
 
 # Mount tmpfs
-mkdir $tmpfs_folder
+mkdir $tmpfs_path
 sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
 
 # Download project
