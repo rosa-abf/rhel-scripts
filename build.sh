@@ -24,6 +24,7 @@ sudo urpmi git-core --auto
 sudo urpmi python-lxml --auto
 sudo urpmi python-rpm --auto
 # sudo urpmi mock-urpm --auto
+sudo urpmi mock --auto
 sudo urpmi rpm-build --auto
 sudo urpmi python-gitpython --auto
 sudo urpmi ruby --auto
@@ -74,12 +75,12 @@ mv $project_path/* $tmpfs_path/SOURCES/
 
 # Buildsrpm
 cd $archives_path
-mock --buildsrpm --spec=$tmpfs_path/SPECS/$spec_name --sources=$tmpfs_path/SOURCES/
-mock src.rpm
-
+sudo mock --buildsrpm --spec=$tmpfs_path/SPECS/$spec_name --sources=$tmpfs_path/SOURCES/
+sudo mock src.rpm
+-
 # Umount tmpfs
 cd /
-sudo umount $project_path
+sudo umount $tmpfs_path
 
 # :plname => save_to_platform.name,
 # :arch => arch.name,
