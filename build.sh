@@ -13,9 +13,10 @@ commit_hash="$COMMIT_HASH"
 echo $git_project_address
 echo $commit_hash
 
-project_path="/home/vagrant/project"
 archives_path="/home/vagrant/archives"
 results_path="/home/vagrant/results"
+tmpfs_path="/home/vagrant/tmpfs"
+project_path="$tmpfs_path/project"
 rpm_build_script_path=`pwd`
 
 # urpmi.addmedia $distrib_type --distrib $repo
@@ -31,9 +32,11 @@ mkdir $archives_path
 mkdir $results_path
 
 # Mount tmpfs
-mkdir $project_path
-sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $project_path
+mkdir $tmpfs_folder
+sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
 
+# Download project
+mkdir $project_path
 git clone $git_project_address $project_path
 cd $project_path
 git checkout $commit_hash
@@ -41,6 +44,38 @@ git checkout $commit_hash
 
 python $rpm_build_script_path/changelog.py $project_path
 ruby $rpm_build_script_path/abf_yml.rb -p $project_path
+
+# Remove .git folder
+rm -rf $project_path/.git
+
+
+# create SPECS folder and move *.spec
+mkdir $tmpfs_path/SPECS
+mv $project_path/*.spec $tmpfs_path/SPECS/
+# Check count of *.spec files (should be one)
+cd $tmpfs_path/SPECS
+x=`ls -1 | grep '.spec$' | wc -l | sed 's/^ *//' | sed 's/ *$//'`
+spec_name=`ls -1 | grep '.spec$'`
+if [ $x -eq '0' ]
+then
+  echo "There are no spec files in repository."
+  exit 1
+else
+  if [ $x -ne '1' ]
+  then
+    echo "There are more then one spec files in repository."
+    exit 1
+  fi
+fi
+
+#create SOURCES folder and move src
+mkdir $tmpfs_path/SOURCES
+mv $project_path/* $tmpfs_path/SOURCES/
+
+# Buildsrpm
+cd $archives_path
+mock --buildsrpm --spec=$tmpfs_path/SPECS/$spec_name --sources=$tmpfs_path/SOURCES/
+mock src.rpm
 
 # Umount tmpfs
 cd /
