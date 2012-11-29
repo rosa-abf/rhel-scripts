@@ -115,6 +115,9 @@ rc=$?
 # mv $tmpfs_path/SPECS $archives_path/
 # mv $tmpfs_path/SOURCES $archives_path/
 
+# Remove src.rpm from RPM dir
+rm $rpm_path/*.src.rpm
+
 # Umount tmpfs
 cd /
 sudo umount $tmpfs_path
