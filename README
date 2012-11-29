@@ -1,0 +1,8 @@
+config_opts['plugin_conf']['root_cache_enable'] = False
+config_opts['basedir'] = '/home/vagrant/tmpfs'
+config_opts['cache_topdir'] = '/home/vagrant/tmpfs/cache'
+
+config_opts['use_system_media'] = False
+
+
+для mdv и rhel необходимо отдельно подключать репозитории

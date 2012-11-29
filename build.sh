@@ -96,8 +96,12 @@ if [ "$distrib_type" == 'mdv' ] ; then
   config_dir=/etc/mock-urpm/
 fi
 
+# Init config file
+sudo rm -rf $config_dir/default.cfg
+sudo ln -s $rpm_build_script_path/configs/$distrib_type-$arch.cfg $config_dir/default.cfg
+
 # Build src.rpm
-$mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir -r $distrib_type-$arch
+$mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir
 
 # Build rpm
 cd $src_rpm_path
