@@ -16,10 +16,8 @@ commit_hash="$COMMIT_HASH"
 # distrib_type="rosa2012.1"
 distrib_type="$DISTRIB_TYPE"
 # distrib_type="mdv"
-arch="$ARCH"
+# arch="$ARCH"
 # arch="x86_64"
-ltc="$LTC"
-
 
 echo $git_project_address
 echo $commit_hash
@@ -99,11 +97,8 @@ fi
 
 # Init config file
 sudo rm -rf $config_dir/default.cfg
-config_file="$distrib_type-$arch.cfg"
-if [ "$ltc" == '1' ] ; then
-  config_file="$distrib_type-ltc-$arch.cfg"
-fi
-sudo ln -s $rpm_build_script_path/configs/$config_file $config_dir/default.cfg
+# default.cfg should be created before running script!!!!
+sudo ln -s $rpm_build_script_path/configs/default.cfg $config_dir/default.cfg
 
 # Build src.rpm
 $mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir
