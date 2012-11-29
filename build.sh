@@ -112,8 +112,8 @@ $mock_command $src_rpm_name --resultdir $rpm_path
 rc=$?
 
 # Save results
-mv $tmpfs_path/SPECS $archives_path/
-mv $tmpfs_path/SOURCES $archives_path/
+# mv $tmpfs_path/SPECS $archives_path/
+# mv $tmpfs_path/SOURCES $archives_path/
 
 # Umount tmpfs
 cd /
