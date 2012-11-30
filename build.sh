@@ -116,7 +116,10 @@ rc=$?
 # mv $tmpfs_path/SOURCES $archives_path/
 
 # Remove src.rpm from RPM dir
-rm $rpm_path/*.src.rpm
+src_rpm_name=`ls -1 $rpm_path/ | grep 'src.rpm$'`
+if [ "$src_rpm_name" != '' ] ; then
+  rm $rpm_path/*.src.rpm
+fi
 
 # Umount tmpfs
 cd /
