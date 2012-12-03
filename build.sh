@@ -137,7 +137,7 @@ fi
 # Generate data for container
 c_data=$results_path/container_data.json
 echo '[' > $c_data
-for rpm in $rpm_path/*.rpm ; do
+for rpm in $rpm_path/*.rpm $src_rpm_path/*.src.rpm ; do
   name=`rpm -qp --queryformat %{NAME} $rpm`
   if [ "$name" != '' ] ; then
     bname=`basename $rpm`
@@ -149,7 +149,8 @@ for rpm in $rpm_path/*.rpm ; do
     echo "\"name\":\"$name\","        >> $c_data
     echo "\"version\":\"$version\","  >> $c_data
     echo "\"release\":\"$release\""   >> $c_data
-    echo '}' >> $c_data
+    echo '},' >> $c_data
   fi
 done
+echo '{}' >> $c_data
 echo ']' >> $c_data
