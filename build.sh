@@ -145,7 +145,7 @@ for rpm in $rpm_path/*.rpm $src_rpm_path/*.src.rpm ; do
     release=`rpm -qp --queryformat %{RELEASE} $rpm`
 
     echo '{' >> $c_data
-    echo "\"bname\":\"$bname\","      >> $c_data
+    echo "\"fullname\":\"$bname\","      >> $c_data
     echo "\"name\":\"$name\","        >> $c_data
     echo "\"version\":\"$version\","  >> $c_data
     echo "\"release\":\"$release\""   >> $c_data
