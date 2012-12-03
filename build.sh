@@ -92,6 +92,7 @@ mkdir $rpm_path
 mock_command="mock"
 config_dir=/etc/mock/
 if [ "$distrib_type" == 'mdv' ] ; then
+  echo "Will be use 'mock-urpm'..."
   mock_command="mock-urpm"
   config_dir=/etc/mock-urpm/
 fi
