@@ -21,6 +21,7 @@ distrib_type="$DISTRIB_TYPE"
 
 echo $git_project_address
 echo $commit_hash
+echo $distrib_type
 
 archives_path="/home/vagrant/archives"
 results_path="/home/vagrant/results"
