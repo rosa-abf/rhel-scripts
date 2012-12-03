@@ -133,3 +133,23 @@ if [[ $rc != 0 ]] ; then
   echo "Build failed: mock-urpm problem"
   exit $rc
 fi
+
+# Generate data for container
+c_data=$results_path/container_data.json
+echo '[' > $c_data
+for rpm in $rpm_path/*.rpm ; do
+  name=`rpm -qp --queryformat %{NAME} $rpm`
+  if [ "$name" != '' ] ; then
+    bname=`basename $rpm`
+    version=`rpm -qp --queryformat %{VERSION} $rpm`
+    release=`rpm -qp --queryformat %{RELEASE} $rpm`
+
+    echo '{' >> $c_data
+    echo "\"bname\":\"$bname\","      >> $c_data
+    echo "\"name\":\"$name\","        >> $c_data
+    echo "\"version\":\"$version\","  >> $c_data
+    echo "\"release\":\"$release\""   >> $c_data
+    echo '}' >> $c_data
+  fi
+done
+echo ']' >> $c_data
