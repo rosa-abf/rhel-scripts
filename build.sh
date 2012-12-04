@@ -144,18 +144,19 @@ echo '[' > $c_data
 for rpm in $rpm_path/*.rpm $src_rpm_path/*.src.rpm ; do
   name=`rpm -qp --queryformat %{NAME} $rpm`
   if [ "$name" != '' ] ; then
-    bname=`basename $rpm`
+    fullname=`basename $rpm`
     version=`rpm -qp --queryformat %{VERSION} $rpm`
     release=`rpm -qp --queryformat %{RELEASE} $rpm`
 
     echo '{' >> $c_data
-    echo "\"fullname\":\"$bname\","   >> $c_data
-    echo "\"name\":\"$name\","        >> $c_data
-    echo "\"version\":\"$version\","  >> $c_data
-    echo "\"release\":\"$release\""   >> $c_data
+    echo "\"fullname\":\"$fullname\","  >> $c_data
+    echo "\"name\":\"$name\","          >> $c_data
+    echo "\"version\":\"$version\","    >> $c_data
+    echo "\"release\":\"$release\""     >> $c_data
     echo '},' >> $c_data
   fi
 done
+# Add '{}'' because ',' before
 echo '{}' >> $c_data
 echo ']' >> $c_data
 
