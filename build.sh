@@ -68,11 +68,11 @@ cd $tmpfs_path/SPECS
 x=`ls -1 | grep '.spec$' | wc -l | sed 's/^ *//' | sed 's/ *$//'`
 spec_name=`ls -1 | grep '.spec$'`
 if [ $x -eq '0' ] ; then
-  echo "There are no spec files in repository."
+  echo '--> There are no spec files in repository.'
   exit 1
 else
   if [ $x -ne '1' ] ; then
-    echo "There are more then one spec files in repository."
+    echo '--> There are more then one spec files in repository.'
     exit 1
   fi
 fi
@@ -103,12 +103,16 @@ sudo rm -rf $config_dir/default.cfg
 sudo ln -s $rpm_build_script_path/configs/default.cfg $config_dir/default.cfg
 
 # Build src.rpm
+echo '--> Build src.rpm'
 $mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir
+echo '--> Done.'
 
 # Build rpm
 cd $src_rpm_path
 src_rpm_name=`ls -1 | grep 'src.rpm$'`
+echo '--> Build rpm'
 $mock_command $src_rpm_name --resultdir $rpm_path
+echo '--> Done.'
 
 # Save exit code
 rc=$?
@@ -130,7 +134,7 @@ rm -rf $tmpfs_path
 
 # Check exit code after build
 if [[ $rc != 0 ]] ; then
-  echo "Build failed: mock-urpm problem"
+  echo '--> Build failed: mock-urpm problem.'
   exit $rc
 fi
 
@@ -145,7 +149,7 @@ for rpm in $rpm_path/*.rpm $src_rpm_path/*.src.rpm ; do
     release=`rpm -qp --queryformat %{RELEASE} $rpm`
 
     echo '{' >> $c_data
-    echo "\"fullname\":\"$bname\","      >> $c_data
+    echo "\"fullname\":\"$bname\","   >> $c_data
     echo "\"name\":\"$name\","        >> $c_data
     echo "\"version\":\"$version\","  >> $c_data
     echo "\"release\":\"$release\""   >> $c_data
@@ -154,3 +158,18 @@ for rpm in $rpm_path/*.rpm $src_rpm_path/*.src.rpm ; do
 done
 echo '{}' >> $c_data
 echo ']' >> $c_data
+
+# Move all logs into the results dir.
+function move_logs {
+  prefix=$2
+  for file in $1/*.log ; do
+    name=`basename $file`
+    if [[ "$name" =~ .*\.log$ ]] ; then
+      echo "--> mv $file $results_path/$prefix-$name"
+      mv $file "$results_path/$prefix-$name"
+    fi
+  done
+}
+
+move_logs $rpm_path 'rpm'
+move_logs $src_rpm_path 'src-rpm'
