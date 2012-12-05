@@ -105,17 +105,38 @@ sudo ln -s $rpm_build_script_path/configs/default.cfg $config_dir/default.cfg
 # Build src.rpm
 echo '--> Build src.rpm'
 $mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir
+# Save exit code
+rc=$?
 echo '--> Done.'
+
+# Move all logs into the results dir.
+function move_logs {
+  prefix=$2
+  for file in $1/*.log ; do
+    name=`basename $file`
+    if [[ "$name" =~ .*\.log$ ]] ; then
+      echo "--> mv $file $results_path/$prefix-$name"
+      mv $file "$results_path/$prefix-$name"
+    fi
+  done
+}
+
+move_logs $src_rpm_path 'src-rpm'
+
+# Check exit code after build
+if [[ $rc != 0 ]] ; then
+  echo '--> Build failed: mock-urpm problem.'
+  exit $rc
+fi
 
 # Build rpm
 cd $src_rpm_path
 src_rpm_name=`ls -1 | grep 'src.rpm$'`
 echo '--> Build rpm'
 $mock_command $src_rpm_name --resultdir $rpm_path
-echo '--> Done.'
-
 # Save exit code
 rc=$?
+echo '--> Done.'
 
 # Save results
 # mv $tmpfs_path/SPECS $archives_path/
@@ -131,6 +152,9 @@ fi
 cd /
 sudo umount $tmpfs_path
 rm -rf $tmpfs_path 
+
+
+move_logs $rpm_path 'rpm'
 
 # Check exit code after build
 if [[ $rc != 0 ]] ; then
@@ -159,18 +183,3 @@ done
 # Add '{}'' because ',' before
 echo '{}' >> $c_data
 echo ']' >> $c_data
-
-# Move all logs into the results dir.
-function move_logs {
-  prefix=$2
-  for file in $1/*.log ; do
-    name=`basename $file`
-    if [[ "$name" =~ .*\.log$ ]] ; then
-      echo "--> mv $file $results_path/$prefix-$name"
-      mv $file "$results_path/$prefix-$name"
-    fi
-  done
-}
-
-move_logs $rpm_path 'rpm'
-move_logs $src_rpm_path 'src-rpm'
