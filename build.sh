@@ -48,6 +48,8 @@ sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
 
 # Download project
 mkdir $project_path
+# Fix for: 'fatal: index-pack failed'
+git config --global core.compression -1
 git clone $git_project_address $project_path
 cd $project_path
 git checkout $commit_hash
