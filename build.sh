@@ -106,7 +106,7 @@ sudo ln -s $rpm_build_script_path/configs/default.cfg $config_dir/default.cfg
 
 # Build src.rpm
 echo '--> Build src.rpm'
-$mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir
+$mock_command --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir -v
 # Save exit code
 rc=$?
 echo '--> Done.'
@@ -135,7 +135,7 @@ fi
 cd $src_rpm_path
 src_rpm_name=`ls -1 | grep 'src.rpm$'`
 echo '--> Build rpm'
-$mock_command $src_rpm_name --resultdir $rpm_path
+$mock_command $src_rpm_name --resultdir $rpm_path -v
 # Save exit code
 rc=$?
 echo '--> Done.'
