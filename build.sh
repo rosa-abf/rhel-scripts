@@ -121,4 +121,7 @@ if [[ $rc != 0 ]] ; then
     rm $rpms_rep_path/$file
   done
   exit $rc
+else
+  rm -rf $srpms_rep_path/media_info_backup
+  rm -rf $rpms_rep_path/media_info_backup
 fi
