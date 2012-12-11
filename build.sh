@@ -12,6 +12,8 @@ echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
 echo "ARCH = $arch"
 
+results_path="/home/vagrant/results"
+
 # Current path:
 # - /home/vagrant/publish-build-list-script
 script_path=/home/vagrant/publish-build-list-script
@@ -81,17 +83,31 @@ for file in $( ls -1 $container_path/RPM ) ; do
   cp $container_path/RPM/$file $rpms_rep_path/
 done
 
+# Move all logs into the results dir.
+function move_logs {
+  prefix=$2
+  for file in $1/*.log ; do
+    name=`basename $file`
+    if [[ "$name" =~ .*\.log$ ]] ; then
+      echo "--> mv $file $results_path/$prefix-$name"
+      mv $file "$results_path/$prefix-$name"
+    fi
+  done
+}
+
 rx=0
 # Build repo
 if [ "$platform_type" == 'mdv' ] ; then
   /usr/bin/genhdlist2 --xml-info $srpms_rep_path
   # Save exit code
   rc=$?
+  move_logs $srpms_rep_path 'genhdlist2-src-rpm'
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
     /usr/bin/genhdlist2 --xml-info $rpms_rep_path
     # Save exit code
     rc=$?
+    move_logs $rpms_rep_path 'genhdlist2-rpm'
   fi
 else
   cd /home/vagrant
@@ -104,11 +120,13 @@ else
   createrepo -d -g $comps_xml -o $srpms_rep_path $srpms_rep_path
   # Save exit code
   rc=$?
+  move_logs $srpms_rep_path 'createrepo-src-rpm'
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
     createrepo -d -g $comps_xml -o $rpms_rep_path $rpms_rep_path
     # Save exit code
     rc=$?
+    move_logs $rpms_rep_path 'createrepo-rpm'
   fi
 fi
 
