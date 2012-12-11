@@ -49,3 +49,76 @@ if [ ! -d "$repository_path/$arch/$rep_name" ]; then
   mkdir $repository_path/$arch/$rep_name
 fi
 
+# Checks 'released' status of platform
+srpms_rep_path=$repository_path/SRPMS/$rep_name/release
+rpms_rep_path=$repository_path/$arch/$rep_name/release
+if [ "$released" == 'true' ] ; then
+  srpms_rep_path=$repository_path/SRPMS/$rep_name/updates
+  rpms_rep_path=$repository_path/$arch/$rep_name/updates
+fi
+if [ ! -d "$srpms_rep_path" ]; then
+  mkdir $srpms_rep_path
+fi
+if [ ! -d "$rpms_rep_path" ]; then
+  mkdir $rpms_rep_path
+fi
+
+# Creates backup of "media_info" folder
+if [ -d "$srpms_rep_path/media_info" ]; then
+  mkdir $srpms_rep_path/media_info_backup
+  cp $srpms_rep_path/media_info/* $srpms_rep_path/media_info_backup/
+fi
+if [ -d "$rpms_rep_path/media_info" ]; then
+  mkdir $rpms_rep_path/media_info_backup
+  cp $rpms_rep_path/media_info/* $rpms_rep_path/media_info_backup/
+fi
+
+# Copy (src.)rpm to repository
+for file in $( ls -1 $container_path/SRC_RPM ) ; do
+  cp $container_path/SRC_RPM/$file $srpms_rep_path/
+done
+for file in $( ls -1 $container_path/RPM ) ; do
+  cp $container_path/RPM/$file $rpms_rep_path/
+done
+
+rx=0
+# Build repo
+if [ "$platform_type" == 'mdv' ] ; then
+  /usr/bin/genhdlist2 --xml-info $srpms_rep_path
+  # Save exit code
+  rc=$?
+  # Check exit code after build and build rpm repo
+  if [[ $rc == 0 ]] ; then
+    /usr/bin/genhdlist2 --xml-info $rpms_rep_path
+    # Save exit code
+    rc=$?
+  fi
+else
+  cd /home/vagrant
+  curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/server-comps_xml-master.tar.gz
+  tar -xzf server-comps_xml-master.tar.gz
+  rm server-comps_xml-master.tar.gz
+
+  comps_xml=/home/vagrant/server-comps_xml-master/res6-comps.xml
+
+  createrepo -d -g $comps_xml -o $srpms_rep_path $srpms_rep_path
+  # Save exit code
+  rc=$?
+  # Check exit code after build and build rpm repo
+  if [[ $rc == 0 ]] ; then
+    createrepo -d -g $comps_xml -o $rpms_rep_path $rpms_rep_path
+    # Save exit code
+    rc=$?
+  fi
+fi
+
+# Check exit code after build and rollback
+if [[ $rc != 0 ]] ; then
+  for file in $( ls -1 $container_path/SRC_RPM ) ; do
+    rm $srpms_rep_path/$file
+  done
+  for file in $( ls -1 $container_path/RPM ) ; do
+    rm $rpms_rep_path/$file
+  done
+  exit $rc
+fi
