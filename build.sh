@@ -120,8 +120,13 @@ if [[ $rc != 0 ]] ; then
   for file in $( ls -1 $container_path/RPM ) ; do
     rm $rpms_rep_path/$file
   done
+  rm -rf $srpms_rep_path/media_info
+  rm -rf $rpms_rep_path/media_info
+  mv $srpms_rep_path/media_info_backup $srpms_rep_path/media_info
+  mv $rpms_rep_path/media_info_backup $rpms_rep_path/media_info
   exit $rc
 else
   rm -rf $srpms_rep_path/media_info_backup
   rm -rf $rpms_rep_path/media_info_backup
 fi
+exit 0
