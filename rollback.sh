@@ -16,7 +16,7 @@ echo "ARCH = $arch"
 # - /home/vagrant/container
 container_path=/home/vagrant/container
 
-repository_path=/home/vagrant/share_folder/repository
+repository_path=/home/vagrant/share_folder
 srpms_rep_path=$repository_path/SRPMS/$rep_name/release
 rpms_rep_path=$repository_path/$arch/$rep_name/release
 if [ "$released" == 'true' ] ; then

@@ -21,12 +21,12 @@ script_path=/home/vagrant/publish-build-list-script
 container_path=/home/vagrant/container
 
 # /home/vagrant/share_folder contains:
-# - http://abf.rosalinux.ru/downloads/rosa2012.1
-# - http://abf.rosalinux.ru/downloads/akirilenko_personal/rosa2012.1
+# - http://abf.rosalinux.ru/downloads/rosa2012.1/repository
+# - http://abf.rosalinux.ru/downloads/akirilenko_personal/repository/rosa2012.1
 platform_path=/home/vagrant/share_folder
 
 # Checks that 'repository' directory exist
-repository_path=$platform_path/repository
+repository_path=$platform_path
 if [ ! -d "$repository_path" ]; then
   mkdir $repository_path
 fi
