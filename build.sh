@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo 'publish-build-list-script'
+echo '--> publish-build-list-script: build.sh'
 
 platform_type="$TYPE"
 released="$RELEASED"
@@ -11,8 +11,6 @@ echo "TYPE = $platform_type"
 echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
 echo "ARCH = $arch"
-
-results_path="/home/vagrant/results"
 
 # Current path:
 # - /home/vagrant/publish-build-list-script
@@ -65,14 +63,20 @@ if [ ! -d "$rpms_rep_path" ]; then
   mkdir $rpms_rep_path
 fi
 
-# Creates backup of "media_info" folder
-if [ -d "$srpms_rep_path/media_info" ]; then
-  mkdir $srpms_rep_path/media_info_backup
-  cp $srpms_rep_path/media_info/* $srpms_rep_path/media_info_backup/
+# Creates backup of "media_info"/"repodata" folder
+m_info_folder='repodata'
+if [ "$platform_type" == 'mdv' ] ; then
+  m_info_folder='media_info'
 fi
-if [ -d "$rpms_rep_path/media_info" ]; then
-  mkdir $rpms_rep_path/media_info_backup
-  cp $rpms_rep_path/media_info/* $rpms_rep_path/media_info_backup/
+if [ -d "$srpms_rep_path/$m_info_folder" ]; then
+  rm -rf "$srpms_rep_path/$m_info_folder-backup"
+  mkdir "$srpms_rep_path/$m_info_folder-backup"
+  cp $srpms_rep_path/$m_info_folder/* "$srpms_rep_path/$m_info_folder-backup/"
+fi
+if [ -d "$rpms_rep_path/$m_info_folder" ]; then
+  rm -rf "$rpms_rep_path/$m_info_folder-backup"
+  mkdir "$rpms_rep_path/$m_info_folder-backup"
+  cp $rpms_rep_path/$m_info_folder/* "$rpms_rep_path/$m_info_folder-backup/"
 fi
 
 # Copy (src.)rpm to repository
@@ -83,31 +87,17 @@ for file in $( ls -1 $container_path/RPM ) ; do
   cp $container_path/RPM/$file $rpms_rep_path/
 done
 
-# Move all logs into the results dir.
-function move_logs {
-  prefix=$2
-  for file in $1/*.log ; do
-    name=`basename $file`
-    if [[ "$name" =~ .*\.log$ ]] ; then
-      echo "--> mv $file $results_path/$prefix-$name"
-      mv $file "$results_path/$prefix-$name"
-    fi
-  done
-}
-
 rx=0
 # Build repo
 if [ "$platform_type" == 'mdv' ] ; then
   /usr/bin/genhdlist2 --xml-info $srpms_rep_path
   # Save exit code
   rc=$?
-  move_logs $srpms_rep_path 'genhdlist2-src-rpm'
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
     /usr/bin/genhdlist2 --xml-info $rpms_rep_path
     # Save exit code
     rc=$?
-    move_logs $rpms_rep_path 'genhdlist2-rpm'
   fi
 else
   cd /home/vagrant
@@ -120,13 +110,11 @@ else
   createrepo -d -g $comps_xml -o $srpms_rep_path $srpms_rep_path
   # Save exit code
   rc=$?
-  move_logs $srpms_rep_path 'createrepo-src-rpm'
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
     createrepo -d -g $comps_xml -o $rpms_rep_path $rpms_rep_path
     # Save exit code
     rc=$?
-    move_logs $rpms_rep_path 'createrepo-rpm'
   fi
 fi
 
@@ -138,13 +126,13 @@ if [[ $rc != 0 ]] ; then
   for file in $( ls -1 $container_path/RPM ) ; do
     rm $rpms_rep_path/$file
   done
-  rm -rf $srpms_rep_path/media_info
-  rm -rf $rpms_rep_path/media_info
-  mv $srpms_rep_path/media_info_backup $srpms_rep_path/media_info
-  mv $rpms_rep_path/media_info_backup $rpms_rep_path/media_info
+  rm -rf $srpms_rep_path/$m_info_folder
+  rm -rf $rpms_rep_path/$m_info_folder
+  mv "$srpms_rep_path/$m_info_folder-backup" $srpms_rep_path/$m_info_folder
+  mv "$rpms_rep_path/$m_info_folder-backup" $rpms_rep_path/$m_info_folder
   exit $rc
 else
-  rm -rf $srpms_rep_path/media_info_backup
-  rm -rf $rpms_rep_path/media_info_backup
+  rm -rf "$srpms_rep_path/$m_info_folder-backup"
+  rm -rf "$rpms_rep_path/$m_info_folder-backup"
 fi
 exit 0
