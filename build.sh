@@ -19,7 +19,7 @@ distrib_type="$DISTRIB_TYPE"
 # arch="$ARCH"
 # arch="x86_64"
 
-echo $git_project_address
+echo $git_project_address | awk '{ gsub(/\:\/\/.*\:\@/, "://[FILTERED]@"); print }'
 echo $commit_hash
 echo $distrib_type
 
@@ -52,8 +52,8 @@ mkdir $project_path
 git config --global core.compression -1
 git clone $git_project_address $project_path
 cd $project_path
+rm .git/config
 git checkout $commit_hash
-
 
 python $rpm_build_script_path/changelog.py $project_path
 ruby $rpm_build_script_path/abf_yml.rb -p $project_path
