@@ -52,7 +52,7 @@ mkdir $project_path
 git config --global core.compression -1
 git clone $git_project_address $project_path
 cd $project_path
-rm .git/config
+git remote rm origin
 git checkout $commit_hash
 
 python $rpm_build_script_path/changelog.py $project_path
