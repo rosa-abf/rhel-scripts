@@ -1,12 +1,14 @@
 #!/bin/sh
 
-echo '--> publish-build-list-script: build.sh'
+echo '--> publish-build-list-script: rebuild.sh'
 
 platform_type="$TYPE"
+released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
 arch="$ARCH"
 
 echo "TYPE = $platform_type"
+echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
 echo "ARCH = $arch"
 
@@ -22,6 +24,10 @@ platform_path=/home/vagrant/share_folder
 # Checks 'released' status of platform
 srpms_rep_path=$repository_path/SRPMS/$rep_name/release
 rpms_rep_path=$repository_path/$arch/$rep_name/release
+if [ "$released" == 'true' ] ; then
+  srpms_rep_path=$repository_path/SRPMS/$rep_name/updates
+  rpms_rep_path=$repository_path/$arch/$rep_name/updates
+fi
 
 rx=0
 # Build repo
