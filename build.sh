@@ -81,9 +81,11 @@ fi
 
 # Copy (src.)rpm to repository
 for file in $( ls -1 $container_path/SRC_RPM ) ; do
+  echo "cp $container_path/SRC_RPM/$file $srpms_rep_path/"
   cp $container_path/SRC_RPM/$file $srpms_rep_path/
 done
 for file in $( ls -1 $container_path/RPM ) ; do
+  echo "cp $container_path/RPM/$file $rpms_rep_path/"
   cp $container_path/RPM/$file $rpms_rep_path/
 done
 
@@ -121,9 +123,11 @@ fi
 # Check exit code after build and rollback
 if [[ $rc != 0 ]] ; then
   for file in $( ls -1 $container_path/SRC_RPM ) ; do
+    echo "rm $srpms_rep_path/$file"
     rm $srpms_rep_path/$file
   done
   for file in $( ls -1 $container_path/RPM ) ; do
+    echo "rm $rpms_rep_path/$file"
     rm $rpms_rep_path/$file
   done
   rm -rf $srpms_rep_path/$m_info_folder
