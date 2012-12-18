@@ -4,6 +4,8 @@ echo 'rpm-build-script'
 
 git_project_address="$GIT_PROJECT_ADDRESS"
 commit_hash="$COMMIT_HASH"
+uname="$UNAME"
+email="$EMAIL"
 # mdv example:
 # git_project_address="https://abf.rosalinux.ru/import/plasma-applet-stackfolder.git"
 # commit_hash="bfe6d68cc607238011a6108014bdcfe86c69456a"
@@ -22,6 +24,8 @@ distrib_type="$DISTRIB_TYPE"
 echo $git_project_address | awk '{ gsub(/\:\/\/.*\:\@/, "://[FILTERED]@"); print }'
 echo $commit_hash
 echo $distrib_type
+echo $uname
+echo $email
 
 archives_path="/home/vagrant/archives"
 results_path="/home/vagrant/results"
@@ -103,6 +107,8 @@ fi
 sudo rm -rf $config_dir/default.cfg
 # default.cfg should be created before running script!!!!
 sudo ln -s $rpm_build_script_path/configs/default.cfg $config_dir/default.cfg
+%mock_command --define="packager $uname $email"
+
 
 # Build src.rpm
 echo '--> Build src.rpm'
