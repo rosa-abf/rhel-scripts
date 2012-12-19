@@ -32,8 +32,8 @@ fi
 rx=0
 # Build repo
 if [ "$platform_type" == 'mdv' ] ; then
-  /usr/bin/genhdlist2 --xml-info $srpms_rep_path
-  /usr/bin/genhdlist2 --xml-info $rpms_rep_path
+  /usr/bin/genhdlist2 --allow-empty-media --xml-info $srpms_rep_path
+  /usr/bin/genhdlist2 --allow-empty-media --xml-info $rpms_rep_path
 else
   cd /home/vagrant
   curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/server-comps_xml-master.tar.gz

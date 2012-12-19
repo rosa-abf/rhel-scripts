@@ -92,12 +92,12 @@ done
 rx=0
 # Build repo
 if [ "$platform_type" == 'mdv' ] ; then
-  /usr/bin/genhdlist2 --xml-info $srpms_rep_path
+  /usr/bin/genhdlist2 --allow-empty-media --xml-info $srpms_rep_path
   # Save exit code
   rc=$?
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
-    /usr/bin/genhdlist2 --xml-info $rpms_rep_path
+    /usr/bin/genhdlist2 --allow-empty-media --xml-info $rpms_rep_path
     # Save exit code
     rc=$?
   fi
