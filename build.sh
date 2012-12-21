@@ -81,10 +81,12 @@ fi
 
 # Copy (src.)rpm to repository
 for file in $( ls -1 $container_path/SRC_RPM ) ; do
+  RPM_PATH=$container_path/SRC_RPM/$file /bin/bash $script_path/sign_rpm.sh
   echo "cp $container_path/SRC_RPM/$file $srpms_rep_path/"
   cp $container_path/SRC_RPM/$file $srpms_rep_path/
 done
 for file in $( ls -1 $container_path/RPM ) ; do
+  RPM_PATH=$container_path/RPM/$file /bin/bash $script_path/sign_rpm.sh
   echo "cp $container_path/RPM/$file $rpms_rep_path/"
   cp $container_path/RPM/$file $rpms_rep_path/
 done
