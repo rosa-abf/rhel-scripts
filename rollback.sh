@@ -29,6 +29,17 @@ if [ "$platform_type" == 'mdv' ] ; then
   m_info_folder='media_info'
 fi
 
+# Rollback SRPM packages
+if [ -d "$srpms_rep_path-backup" ]; then
+  cp -f $srpms_rep_path-backup/* $srpms_rep_path/
+  rm -rf $srpms_rep_path-backup
+fi
+# Rollback RPM packages
+if [ -d "$rpms_rep_path-backup" ]; then
+  cp -f $rpms_rep_path-backup/* $rpms_rep_path/
+  rm -rf $rpms_rep_path-backup
+fi
+
 # Rollback "media_info"/"repodata" folder
 if [ -d "$srpms_rep_path/$m_info_folder-backup" ]; then
   rm -rf "$srpms_rep_path/$m_info_folder"
