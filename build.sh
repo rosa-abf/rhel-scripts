@@ -91,10 +91,10 @@ for file in $( ls -1 $container_path/RPM ) ; do
   cp $container_path/RPM/$file $rpms_rep_path/
 done
 
-chown root:root $srpms_rep_path/*.rpm
-chown root:root $rpms_rep_path/*.rpm
-chmod 0666 $srpms_rep_path/*.rpm
-chmod 0666 $rpms_rep_path/*.rpm
+sudo chown root:root $srpms_rep_path/*.rpm
+sudo chown root:root $rpms_rep_path/*.rpm
+sudo chmod 0666 $srpms_rep_path/*.rpm
+sudo chmod 0666 $rpms_rep_path/*.rpm
 
 
 rx=0
@@ -140,11 +140,10 @@ if [[ $rc != 0 ]] ; then
   done
 #  sudo rm "$srpms_rep_path/$m_info_folder/*"
 #  sudo rm "$rpms_rep_path/$m_info_folder/*"
-  sudo mv $srpms_rep_path/$m_info_folder-backup/* $srpms_rep_path/$m_info_folder/
-  sudo mv $rpms_rep_path/$m_info_folder-backup/* $rpms_rep_path/$m_info_folder/
+  sudo cp -f $srpms_rep_path/$m_info_folder-backup/* $srpms_rep_path/$m_info_folder/
+  sudo cp -f $rpms_rep_path/$m_info_folder-backup/* $rpms_rep_path/$m_info_folder/
   exit $rc
-else
-  sudo rm -rf $srpms_rep_path/$m_info_folder-backup
-  sudo rm -rf $rpms_rep_path/$m_info_folder-backup
 fi
+rm -rf $srpms_rep_path/$m_info_folder-backup
+rm -rf $rpms_rep_path/$m_info_folder-backup
 exit 0
