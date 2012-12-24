@@ -94,12 +94,12 @@ done
 rx=0
 # Build repo
 if [ "$platform_type" == 'mdv' ] ; then
-  /usr/bin/genhdlist2 --allow-empty-media --xml-info $srpms_rep_path
+  sudo /usr/bin/genhdlist2 --allow-empty-media --xml-info $srpms_rep_path
   # Save exit code
   rc=$?
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
-    /usr/bin/genhdlist2 --allow-empty-media --xml-info $rpms_rep_path
+    sudo /usr/bin/genhdlist2 --allow-empty-media --xml-info $rpms_rep_path
     # Save exit code
     rc=$?
   fi
@@ -132,13 +132,13 @@ if [[ $rc != 0 ]] ; then
     echo "rm $rpms_rep_path/$file"
     rm "$rpms_rep_path/$file"
   done
-  rm -rf "$srpms_rep_path/$m_info_folder"
-  rm -rf "$rpms_rep_path/$m_info_folder"
-  mv "$srpms_rep_path/$m_info_folder-backup" "$srpms_rep_path/$m_info_folder"
-  mv "$rpms_rep_path/$m_info_folder-backup" "$rpms_rep_path/$m_info_folder"
+#  sudo rm "$srpms_rep_path/$m_info_folder/*"
+#  sudo rm "$rpms_rep_path/$m_info_folder/*"
+  sudo mv "$srpms_rep_path/$m_info_folder-backup/*" "$srpms_rep_path/$m_info_folder/"
+  sudo mv "$rpms_rep_path/$m_info_folder-backup/*" "$rpms_rep_path/$m_info_folder/"
   exit $rc
 else
-  rm -rf "$srpms_rep_path/$m_info_folder-backup"
-  rm -rf "$rpms_rep_path/$m_info_folder-backup"
+  sudo rm -rf "$srpms_rep_path/$m_info_folder-backup"
+  sudo rm -rf "$rpms_rep_path/$m_info_folder-backup"
 fi
 exit 0
