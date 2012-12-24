@@ -100,12 +100,12 @@ chmod 0666 $rpms_rep_path/*.rpm
 rx=0
 # Build repo
 if [ "$platform_type" == 'mdv' ] ; then
-  sudo /usr/bin/genhdlist2 --nolock --allow-empty-media --xml-info $srpms_rep_path
+  sudo /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $srpms_rep_path
   # Save exit code
   rc=$?
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
-    sudo /usr/bin/genhdlist2 --nolock --allow-empty-media --xml-info $rpms_rep_path
+    sudo /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $rpms_rep_path
     # Save exit code
     rc=$?
   fi
