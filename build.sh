@@ -91,10 +91,10 @@ for file in $( ls -1 $container_path/RPM ) ; do
   cp $container_path/RPM/$file $rpms_rep_path/
 done
 
-sudo chown rosa:rosa $srpms_rep_path/*
-sudo chown rosa:rosa $srpms_rep_path/$m_info_folder/*
-sudo chown rosa:rosa $rpms_rep_path/*
-sudo chown rosa:rosa $rpms_rep_path/$m_info_folder/*
+sudo chown vagrant:vagrant $srpms_rep_path/*
+sudo chown vagrant:vagrant $srpms_rep_path/$m_info_folder/*
+sudo chown vagrant:vagrant $rpms_rep_path/*
+sudo chown vagrant:vagrant $rpms_rep_path/$m_info_folder/*
 sudo chmod 0666 $srpms_rep_path/*.rpm
 sudo chmod 0666 $rpms_rep_path/*.rpm
 
