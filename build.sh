@@ -126,16 +126,16 @@ fi
 if [[ $rc != 0 ]] ; then
   for file in $( ls -1 $container_path/SRC_RPM ) ; do
     echo "rm $srpms_rep_path/$file"
-    rm $srpms_rep_path/$file
+    rm "$srpms_rep_path/$file"
   done
   for file in $( ls -1 $container_path/RPM ) ; do
     echo "rm $rpms_rep_path/$file"
-    rm $rpms_rep_path/$file
+    rm "$rpms_rep_path/$file"
   done
-  rm -rf $srpms_rep_path/$m_info_folder
-  rm -rf $rpms_rep_path/$m_info_folder
-  mv "$srpms_rep_path/$m_info_folder-backup" $srpms_rep_path/$m_info_folder
-  mv "$rpms_rep_path/$m_info_folder-backup" $rpms_rep_path/$m_info_folder
+  rm -rf "$srpms_rep_path/$m_info_folder"
+  rm -rf "$rpms_rep_path/$m_info_folder"
+  mv "$srpms_rep_path/$m_info_folder-backup" "$srpms_rep_path/$m_info_folder"
+  mv "$rpms_rep_path/$m_info_folder-backup" "$rpms_rep_path/$m_info_folder"
   exit $rc
 else
   rm -rf "$srpms_rep_path/$m_info_folder-backup"
