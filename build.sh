@@ -140,11 +140,11 @@ if [[ $rc != 0 ]] ; then
   done
 #  sudo rm "$srpms_rep_path/$m_info_folder/*"
 #  sudo rm "$rpms_rep_path/$m_info_folder/*"
-  sudo mv "$srpms_rep_path/$m_info_folder-backup/*" "$srpms_rep_path/$m_info_folder/"
-  sudo mv "$rpms_rep_path/$m_info_folder-backup/*" "$rpms_rep_path/$m_info_folder/"
+  sudo mv $srpms_rep_path/$m_info_folder-backup/* $srpms_rep_path/$m_info_folder/
+  sudo mv $rpms_rep_path/$m_info_folder-backup/* $rpms_rep_path/$m_info_folder/
   exit $rc
 else
-  sudo rm -rf "$srpms_rep_path/$m_info_folder-backup"
-  sudo rm -rf "$rpms_rep_path/$m_info_folder-backup"
+  sudo rm -rf $srpms_rep_path/$m_info_folder-backup
+  sudo rm -rf $rpms_rep_path/$m_info_folder-backup
 fi
 exit 0
