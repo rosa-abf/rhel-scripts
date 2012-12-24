@@ -91,8 +91,10 @@ for file in $( ls -1 $container_path/RPM ) ; do
   cp $container_path/RPM/$file $rpms_rep_path/
 done
 
-sudo chown root:root $srpms_rep_path/*.rpm
-sudo chown root:root $rpms_rep_path/*.rpm
+sudo chown rosa:rosa $srpms_rep_path/*
+sudo chown rosa:rosa $srpms_rep_path/$m_info_folder/*
+sudo chown rosa:rosa $rpms_rep_path/*
+sudo chown rosa:rosa $rpms_rep_path/$m_info_folder/*
 sudo chmod 0666 $srpms_rep_path/*.rpm
 sudo chmod 0666 $rpms_rep_path/*.rpm
 
@@ -100,12 +102,12 @@ sudo chmod 0666 $rpms_rep_path/*.rpm
 rx=0
 # Build repo
 if [ "$platform_type" == 'mdv' ] ; then
-  sudo /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $srpms_rep_path
+  /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $srpms_rep_path
   # Save exit code
   rc=$?
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
-    sudo /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $rpms_rep_path
+    /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $rpms_rep_path
     # Save exit code
     rc=$?
   fi
@@ -138,12 +140,13 @@ if [[ $rc != 0 ]] ; then
     echo "rm $rpms_rep_path/$file"
     rm "$rpms_rep_path/$file"
   done
-#  sudo rm "$srpms_rep_path/$m_info_folder/*"
-#  sudo rm "$rpms_rep_path/$m_info_folder/*"
-  sudo cp -f $srpms_rep_path/$m_info_folder-backup/* $srpms_rep_path/$m_info_folder/
-  sudo cp -f $rpms_rep_path/$m_info_folder-backup/* $rpms_rep_path/$m_info_folder/
-  exit $rc
+  if [ -d "$srpms_rep_path/$m_info_folder-backup" ]; then
+    cp -f $srpms_rep_path/$m_info_folder-backup/* $srpms_rep_path/$m_info_folder/
+  fi
+  if [ -d "$rpms_rep_path/$m_info_folder-backup" ]; then
+    cp -f $rpms_rep_path/$m_info_folder-backup/* $rpms_rep_path/$m_info_folder/
+  fi  
 fi
 rm -rf $srpms_rep_path/$m_info_folder-backup
 rm -rf $rpms_rep_path/$m_info_folder-backup
-exit 0
+exit $rc
