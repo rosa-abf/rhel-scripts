@@ -92,7 +92,7 @@ for file in $( ls -1 $container_path/RPM ) ; do
 done
 
 echo '============='
-ls -la
+ls -la $srpms_rep_path/
 
 sudo chown vagrant:vagrant $srpms_rep_path/*
 sudo chown vagrant:vagrant $srpms_rep_path/$m_info_folder/*
@@ -102,7 +102,7 @@ sudo chmod 0666 $srpms_rep_path/*.rpm
 sudo chmod 0666 $rpms_rep_path/*.rpm
 
 echo '=============='
-ls -la
+ls -la $srpms_rep_path/
 
 rx=0
 # Build repo
