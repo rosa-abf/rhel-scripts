@@ -116,6 +116,7 @@ else
   rc=$?
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
+    rm -rf .olddata
     createrepo -v --update -d -g $comps_xml -o $rpms_rep_path $rpms_rep_path
     # Save exit code
     rc=$?
