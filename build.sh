@@ -94,11 +94,13 @@ done
 rx=0
 # Build repo
 if [ "$platform_type" == 'mdv' ] ; then
+  echo "/usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $srpms_rep_path"
   /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $srpms_rep_path
   # Save exit code
   rc=$?
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
+    echo "/usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $rpms_rep_path"
     /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $rpms_rep_path
     # Save exit code
     rc=$?
@@ -111,12 +113,14 @@ else
 
   comps_xml=/home/vagrant/server-comps_xml-master/res6-comps.xml
 
+  echo "createrepo -v --update -d -g $comps_xml -o $srpms_rep_path $srpms_rep_path"
   createrepo -v --update -d -g $comps_xml -o $srpms_rep_path $srpms_rep_path
   # Save exit code
   rc=$?
   # Check exit code after build and build rpm repo
   if [[ $rc == 0 ]] ; then
     rm -rf .olddata
+    echo "createrepo -v --update -d -g $comps_xml -o $rpms_rep_path $rpms_rep_path"
     createrepo -v --update -d -g $comps_xml -o $rpms_rep_path $rpms_rep_path
     # Save exit code
     rc=$?
