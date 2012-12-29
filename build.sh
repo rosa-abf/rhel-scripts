@@ -80,11 +80,15 @@ if [ -d "$rpms_rep_path/$m_info_folder" ]; then
 fi
 
 # Copy (src.)rpm to repository
+chown root:root $container_path/SRC_RPM/*
+chmod 0666 $container_path/SRC_RPM/*
 for file in $( ls -1 $container_path/SRC_RPM ) ; do
   RPM_PATH=$container_path/SRC_RPM/$file /bin/bash $script_path/sign_rpm.sh
   echo "cp $container_path/SRC_RPM/$file $srpms_rep_path/"
   cp $container_path/SRC_RPM/$file $srpms_rep_path/
 done
+chown root:root $container_path/RPM/*
+chmod 0666 $container_path/RPM/*
 for file in $( ls -1 $container_path/RPM ) ; do
   RPM_PATH=$container_path/RPM/$file /bin/bash $script_path/sign_rpm.sh
   echo "cp $container_path/RPM/$file $rpms_rep_path/"
