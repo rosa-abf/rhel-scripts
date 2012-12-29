@@ -2,6 +2,8 @@
 
 echo '--> publish-build-list-script: rollback.sh'
 
+usermod -a -G vboxsf vagrant
+
 platform_type="$TYPE"
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
