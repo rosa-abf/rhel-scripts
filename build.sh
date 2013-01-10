@@ -193,3 +193,12 @@ done
 # Add '{}'' because ',' before
 echo '{}' >> $c_data
 echo ']' >> $c_data
+
+# Move all rpms into results folder
+echo "--> mv $rpm_path/*.rpm $results_path/"
+mv $rpm_path/*.rpm $results_path/
+echo "--> mv $src_rpm_path/*.rpm $results_path/"
+mv $src_rpm_path/*.rpm $results_path/
+
+# Remove archives folder
+rm -rf $archives_path
