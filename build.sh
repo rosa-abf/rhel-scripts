@@ -58,17 +58,16 @@ for arch in $arches ; do
   if [ -f "$new_packages" ]; then
     cd $rpm_new
     for sha1 in `cat $new_packages` ; do
-      results=`curl -L $file_store_url?hash=$sha1`
-      if [ "$results" == '[]' ] ; then
-        echo "--> Package with sha1 '$sha1' does not exist!!!"
-      else
+      fullname=`ruby $script_path/extract_filename.rb -s $sha1`
+      if [ "$fullname" != '' ] ; then
         curl -O -L "$file_store_url/$sha1"
-        fullname=`ruby -e "require 'rubygems'; require 'json'; puts JSON.parse('$results').first['file_name'];"`
         mv $sha1 $fullname
         echo $fullname >> "$new_packages.downloaded"
         chown root:root $fullname
         chmod 0666 $fullname
         RPM_PATH=$rpm_new/$fullname /bin/bash $script_path/sign_rpm.sh
+      else
+        echo "--> Package with sha1 '$sha1' does not exist!!!"
       fi
     done
     mv $rpm_new/* $main_folder/$status/
@@ -116,31 +115,7 @@ done
 
 # Check exit code after build and rollback
 if [ $rc != 0 ] ; then
-  for arch in $arches ; do
-    main_folder=$repository_path/$arch/$rep_name
-    rpm_backup="$main_folder/$status-rpm-backup"
-    m_info_backup="$main_folder/$status-$m_info_folder-backup"
-
-    if [ -d "$rpm_backup" ] && [ "$(ls -A $rpm_backup)" ]; then
-      mv $rpm_backup/* $main_folder/$status/
-    fi
-
-    if [ -d "$m_info_backup" ] && [ "$(ls -A $m_info_backup)" ]; then
-      rm -rf $main_folder/$status/$m_info_folder
-      mv $m_info_backup/* $main_folder/$status/$m_info_folder/
-    fi
-
-    # Remove new packages
-    new_packages="$container_path/new.$arch.list.downloaded"
-    if [ -f "$new_packages" ]; then
-      for fullname in `cat $new_packages` ; do
-        rm -f $main_folder/$status/$fullname
-      done
-      rm -rf $new_packages
-    fi 
-
-    rm -rf $rpm_backup $m_info_backup
-  done
+  TYPE=$platform_type RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
 fi
 
 exit $rc
