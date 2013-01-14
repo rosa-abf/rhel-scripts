@@ -7,12 +7,10 @@ usermod -a -G vboxsf vagrant
 platform_type="$TYPE"
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
-arch="$ARCH"
 
 echo "TYPE = $platform_type"
 echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
-echo "ARCH = $arch"
 
 # Current path:
 # - /home/vagrant/publish-build-list-script
@@ -27,129 +25,122 @@ container_path=/home/vagrant/container
 # - http://abf.rosalinux.ru/downloads/akirilenko_personal/repository/rosa2012.1
 platform_path=/home/vagrant/share_folder
 
-# Checks that 'repository' directory exist
 repository_path=$platform_path
-if [ ! -d "$repository_path" ]; then
-  mkdir $repository_path
-fi
-
-# Checks that 'arch' directory exist
-if [ ! -d "$repository_path/$arch" ]; then
-  mkdir $repository_path/$arch
-fi
-
-# Checks that 'SRPMS' directory exist
-if [ ! -d "$repository_path/SRPMS" ]; then
-  mkdir $repository_path/SRPMS
-fi
-
-# Checks that repository with name 'rep_name' exist
-if [ ! -d "$repository_path/SRPMS/$rep_name" ]; then
-  mkdir $repository_path/SRPMS/$rep_name
-fi
-if [ ! -d "$repository_path/$arch/$rep_name" ]; then
-  mkdir $repository_path/$arch/$rep_name
-fi
 
 # Checks 'released' status of platform
-srpms_rep_path=$repository_path/SRPMS/$rep_name/release
-rpms_rep_path=$repository_path/$arch/$rep_name/release
+status='release'
 if [ "$released" == 'true' ] ; then
-  srpms_rep_path=$repository_path/SRPMS/$rep_name/updates
-  rpms_rep_path=$repository_path/$arch/$rep_name/updates
+  status='updates'
 fi
-if [ ! -d "$srpms_rep_path" ]; then
-  mkdir $srpms_rep_path
-fi
-if [ ! -d "$rpms_rep_path" ]; then
-  mkdir $rpms_rep_path
-fi
+# Checks that 'repository' directory exist
+mkdir -p $repository_path/{SRPMS,i585,x86_64}/$rep_name/$status
 
-# Creates backup of "media_info"/"repodata" folder
+# Defines "media_info"/"repodata" folder
 m_info_folder='repodata'
 if [ "$platform_type" == 'mdv' ] ; then
   m_info_folder='media_info'
 fi
-if [ -d "$srpms_rep_path/$m_info_folder" ]; then
-  rm -rf "$srpms_rep_path/$m_info_folder-backup"
-  mkdir "$srpms_rep_path/$m_info_folder-backup"
-  cp $srpms_rep_path/$m_info_folder/* "$srpms_rep_path/$m_info_folder-backup/"
-fi
-if [ -d "$rpms_rep_path/$m_info_folder" ]; then
-  rm -rf "$rpms_rep_path/$m_info_folder-backup"
-  mkdir "$rpms_rep_path/$m_info_folder-backup"
-  cp $rpms_rep_path/$m_info_folder/* "$rpms_rep_path/$m_info_folder-backup/"
-fi
-
-# Copy (src.)rpm to repository
-chown root:root $container_path/SRC_RPM/*
-chmod 0666 $container_path/SRC_RPM/*
-for file in $( ls -1 $container_path/SRC_RPM ) ; do
-  RPM_PATH=$container_path/SRC_RPM/$file /bin/bash $script_path/sign_rpm.sh
-  echo "cp $container_path/SRC_RPM/$file $srpms_rep_path/"
-  cp $container_path/SRC_RPM/$file $srpms_rep_path/
-done
-chown root:root $container_path/RPM/*
-chmod 0666 $container_path/RPM/*
-for file in $( ls -1 $container_path/RPM ) ; do
-  RPM_PATH=$container_path/RPM/$file /bin/bash $script_path/sign_rpm.sh
-  echo "cp $container_path/RPM/$file $rpms_rep_path/"
-  cp $container_path/RPM/$file $rpms_rep_path/
-done
 
 rx=0
-# Build repo
-if [ "$platform_type" == 'mdv' ] ; then
-  echo "/usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $srpms_rep_path"
-  /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $srpms_rep_path
-  # Save exit code
-  rc=$?
-  # Check exit code after build and build rpm repo
-  if [[ $rc == 0 ]] ; then
-    echo "/usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $rpms_rep_path"
-    /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $rpms_rep_path
+arches="SRPMS i585 x86_64"
+file_store_url='http://file-store.rosalinux.ru/api/v1/file_stores'
+for arch in $arches ; do
+  main_folder=$repository_path/$arch/$rep_name
+  rpm_backup="$main_folder/$status-rpm-backup"
+  rpm_new="$main_folder/$status-rpm-new"
+  m_info_backup="$main_folder/$status-$m_info_folder-backup"
+  rm -rf $rpm_backup $rpm_new $m_info_backup
+  mkdir {$rpm_backup,$rpm_new,$m_info_backup}
+  cp -rf $main_folder/$status/$m_info_folder/* $m_info_backup/
+
+  # Downloads new packages
+  new_packages="$container_path/new.$arch.list"
+  if [ -f "$new_packages" ]; then
+    cd $rpm_new
+    for sha1 in `cat $new_packages` ; do
+      results=`curl -L $file_store_url?hash=$sha1`
+      if [ "$results" == '[]' ] ; then
+        echo "--> Package with sha1 '$sha1' does not exist!!!"
+      else
+        curl -O -L "$file_store_url/$sha1"
+        fullname=`ruby -e "require 'rubygems'; require 'json'; puts JSON.parse('$results').first['file_name'];"`
+        mv $sha1 $fullname
+        echo $fullname >> "$new_packages.downloaded"
+        chown root:root $fullname
+        chmod 0666 $fullname
+        RPM_PATH=$rpm_new/$fullname /bin/bash $script_path/sign_rpm.sh
+      fi
+    done
+    mv $rpm_new/* $main_folder/$status/
+  fi  
+  rm -rf $rpm_new
+
+  # Creates backup
+  old_packages="$container_path/old.$arch.list"
+  if [ -f "$old_packages" ]; then
+    for fullname in `cat $old_packages` ; do
+      package=$rpm_backup/$status/$fullname
+      if [ -f "$package" ]; then
+        mv $package $rpm_backup/
+      fi
+    done
+  fi  
+
+  # Build repo
+  if [ "$platform_type" == 'mdv' ] ; then
+    echo "/usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $main_folder/$status"
+    /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $main_folder/$status
+    # Save exit code
+    rc=$?
+  else
+    comps_xml=/home/vagrant/server-comps_xml-master/res6-comps.xml
+    if [ ! -f "$comps_xml" ]; then
+      cd /home/vagrant
+      curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/server-comps_xml-master.tar.gz
+      tar -xzf server-comps_xml-master.tar.gz
+      rm server-comps_xml-master.tar.gz
+    fi
+
+    echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
+    createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status
     # Save exit code
     rc=$?
   fi
-else
-  cd /home/vagrant
-  curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/server-comps_xml-master.tar.gz
-  tar -xzf server-comps_xml-master.tar.gz
-  rm server-comps_xml-master.tar.gz
 
-  comps_xml=/home/vagrant/server-comps_xml-master/res6-comps.xml
-
-  echo "createrepo -v --update -d -g $comps_xml -o $srpms_rep_path $srpms_rep_path"
-  createrepo -v --update -d -g $comps_xml -o $srpms_rep_path $srpms_rep_path
-  # Save exit code
-  rc=$?
-  # Check exit code after build and build rpm repo
-  if [[ $rc == 0 ]] ; then
-    rm -rf .olddata
-    echo "createrepo -v --update -d -g $comps_xml -o $rpms_rep_path $rpms_rep_path"
-    createrepo -v --update -d -g $comps_xml -o $rpms_rep_path $rpms_rep_path
-    # Save exit code
-    rc=$?
+  # Check exit code
+  if [ $rc != 0 ] ; then
+    break
   fi
-fi
+
+done
 
 # Check exit code after build and rollback
-if [[ $rc != 0 ]] ; then
-  for file in $( ls -1 $container_path/SRC_RPM ) ; do
-    echo "rm $srpms_rep_path/$file"
-    rm "$srpms_rep_path/$file"
+if [ $rc != 0 ] ; then
+  for arch in $arches ; do
+    main_folder=$repository_path/$arch/$rep_name
+    rpm_backup="$main_folder/$status-rpm-backup"
+    m_info_backup="$main_folder/$status-$m_info_folder-backup"
+
+    if [ -d "$rpm_backup" ] && [ "$(ls -A $rpm_backup)" ]; then
+      mv $rpm_backup/* $main_folder/$status/
+    fi
+
+    if [ -d "$m_info_backup" ] && [ "$(ls -A $m_info_backup)" ]; then
+      rm -rf $main_folder/$status/$m_info_folder
+      mv $m_info_backup/* $main_folder/$status/$m_info_folder/
+    fi
+
+    # Remove new packages
+    new_packages="$container_path/new.$arch.list.downloaded"
+    if [ -f "$new_packages" ]; then
+      for fullname in `cat $new_packages` ; do
+        rm -f $main_folder/$status/$fullname
+      done
+      rm -rf $new_packages
+    fi 
+
+    rm -rf $rpm_backup $m_info_backup
   done
-  for file in $( ls -1 $container_path/RPM ) ; do
-    echo "rm $rpms_rep_path/$file"
-    rm "$rpms_rep_path/$file"
-  done
-  if [ -d "$srpms_rep_path/$m_info_folder-backup" ]; then
-    cp -f $srpms_rep_path/$m_info_folder-backup/* $srpms_rep_path/$m_info_folder/
-  fi
-  if [ -d "$rpms_rep_path/$m_info_folder-backup" ]; then
-    cp -f $rpms_rep_path/$m_info_folder-backup/* $rpms_rep_path/$m_info_folder/
-  fi  
 fi
-rm -rf $srpms_rep_path/$m_info_folder-backup
-rm -rf $rpms_rep_path/$m_info_folder-backup
+
 exit $rc
