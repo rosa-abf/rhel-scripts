@@ -7,23 +7,20 @@ usermod -a -G vboxsf vagrant
 platform_type="$TYPE"
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
-arch="$ARCH"
+use_file_store="$USE_FILE_STORE"
 
 echo "TYPE = $platform_type"
 echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
-echo "ARCH = $arch"
 
 # Container path:
 # - /home/vagrant/container
 container_path=/home/vagrant/container
 
 repository_path=/home/vagrant/share_folder
-srpms_rep_path=$repository_path/SRPMS/$rep_name/release
-rpms_rep_path=$repository_path/$arch/$rep_name/release
+status='release'
 if [ "$released" == 'true' ] ; then
-  srpms_rep_path=$repository_path/SRPMS/$rep_name/updates
-  rpms_rep_path=$repository_path/$arch/$rep_name/updates
+  status='updates'
 fi
 
 m_info_folder='repodata'
@@ -31,31 +28,42 @@ if [ "$platform_type" == 'mdv' ] ; then
   m_info_folder='media_info'
 fi
 
-# Rollback SRPM packages
-if [ -d "$srpms_rep_path-backup" ]; then
-  cp -f $srpms_rep_path-backup/* $srpms_rep_path/
-  rm -rf $srpms_rep_path-backup
-fi
-# Rollback RPM packages
-if [ -d "$rpms_rep_path-backup" ]; then
-  cp -f $rpms_rep_path-backup/* $rpms_rep_path/
-  rm -rf $rpms_rep_path-backup
-fi
+for arch in SRPMS i585 x86_64 ; do
+  main_folder=$repository_path/$arch/$rep_name
+  rpm_backup="$main_folder/$status-rpm-backup"
+  m_info_backup="$main_folder/$status-$m_info_folder-backup"
 
-# Rollback "media_info"/"repodata" folder
-if [ -d "$srpms_rep_path/$m_info_folder-backup" ]; then
-  rm -rf "$srpms_rep_path/$m_info_folder"
-  mv "$srpms_rep_path/$m_info_folder-backup" $srpms_rep_path/$m_info_folder
-fi
-if [ -d "$rpms_rep_path/$m_info_folder-backup" ]; then
-  rm -rf "$rpms_rep_path/$m_info_folder"
-  mv "$rpms_rep_path/$m_info_folder-backup" $rpms_rep_path/$m_info_folder
-fi
+  if [ -d "$rpm_backup" ] && [ "$(ls -A $rpm_backup)" ]; then
+    mv $rpm_backup/* $main_folder/$status/
+  fi
 
-for file in $( ls -1 $container_path/SRC_RPM ) ; do
-  rm $srpms_rep_path/$file
+  if [ -d "$m_info_backup" ] && [ "$(ls -A $m_info_backup)" ]; then
+    rm -rf $main_folder/$status/$m_info_folder
+    mv $m_info_backup/* $main_folder/$status/$m_info_folder/
+  fi
+
+  # Remove new packages
+  if [ "$use_file_store" != 'false' ]; then
+    new_packages="$container_path/new.$arch.list"
+    if [ -f "$new_packages" ]; then
+      for sha1 in `cat $new_packages` ; do
+        fullname=`ruby $script_path/extract_filename.rb -s $sha1`
+        if [ "$fullname" != '' ] ; then
+          rm -f $main_folder/$status/$fullname
+        fi
+      done
+    fi
+  else
+    new_packages="$container_path/new.$arch.list.downloaded"
+    if [ -f "$new_packages" ]; then
+      for fullname in `cat $new_packages` ; do
+        rm -f $main_folder/$status/$fullname
+      done
+      rm -rf $new_packages
+    fi 
+  fi
+
+  rm -rf $rpm_backup $m_info_backup
 done
-for file in $( ls -1 $container_path/RPM ) ; do
-  rm $rpms_rep_path/$file
-done
+
 exit 0

@@ -29,10 +29,8 @@ function resign_all_rpm_in_folder {
   fi
 }
 
-repos="release updates"
-arches="SRPMS i585 x86_64"
-for arch in $arches ; do
-  for rep in $repos ; do
+for arch in SRPMS i585 x86_64 ; do
+  for rep in release updates ; do
     resign_all_rpm_in_folder "$repository_path/$arch/$rep_name/$rep"
   done
 done
