@@ -43,7 +43,7 @@ for arch in SRPMS i585 x86_64 ; do
   fi
 
   # Remove new packages
-  if [ "$use_file_store" != 'false' ] && then
+  if [ "$use_file_store" != 'false' ]; then
     new_packages="$container_path/new.$arch.list"
     if [ -f "$new_packages" ]; then
       for sha1 in `cat $new_packages` ; do

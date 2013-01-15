@@ -88,7 +88,7 @@ for arch in $arches ; do
   # Build repo
   if [ "$platform_type" == 'mdv' ] ; then
     echo "/usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $main_folder/$status"
-    /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $main_folder/$status
+    /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info "$main_folder/$status"
     # Save exit code
     rc=$?
   else
@@ -101,7 +101,7 @@ for arch in $arches ; do
     fi
 
     echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
-    createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status
+    createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
     # Save exit code
     rc=$?
   fi
