@@ -88,8 +88,9 @@ for arch in $arches ; do
         mv $package $rpm_backup/
       fi
     done
-  else
     update_repo=1
+  else
+    update_repo=0
   fi  
 
   if [ $update_repo != 1 ] ; then
