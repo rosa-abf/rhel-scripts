@@ -73,6 +73,9 @@ for arch in $arches ; do
       fi
     done
     mv $rpm_new/* $main_folder/$status/
+  else
+    rm -rf $rpm_backup $rpm_new $m_info_backup
+    break
   fi  
   rm -rf $rpm_new
 
@@ -119,6 +122,14 @@ done
 # Check exit code after build and rollback
 if [ $rc != 0 ] ; then
   TYPE=$platform_type RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
+else
+  for arch in SRPMS i585 x86_64 ; do
+    main_folder=$repository_path/$arch/$rep_name
+    rpm_backup="$main_folder/$status-rpm-backup"
+    rpm_new="$main_folder/$status-rpm-new"
+    m_info_backup="$main_folder/$status-$m_info_folder-backup"
+    rm -rf $rpm_backup $rpm_new $m_info_backup
+  done
 fi
 
 exit $rc
