@@ -88,6 +88,7 @@ for arch in $arches ; do
   fi  
 
   # Build repo
+  cd $script_path/
   if [ "$platform_type" == 'mdv' ] ; then
     echo "/usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $main_folder/$status"
     /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info "$main_folder/$status"
