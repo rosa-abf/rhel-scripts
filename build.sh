@@ -40,12 +40,12 @@ if [ "$platform_type" == 'mdv' ] ; then
 fi
 
 # Checks that 'repository' directory exist
-mkdir -p $repository_path/{SRPMS,i585,x86_64}/$rep_name/$status/$m_info_folder
+mkdir -p $repository_path/{SRPMS,i586,x86_64}/$rep_name/$status/$m_info_folder
 
 
 rx=0
 update_repo=1
-arches="SRPMS i585 x86_64"
+arches="SRPMS i586 x86_64"
 file_store_url='http://file-store.rosalinux.ru/api/v1/file_stores'
 for arch in $arches ; do
   main_folder=$repository_path/$arch/$rep_name
@@ -130,7 +130,7 @@ done
 if [ $rc != 0 ] ; then
   TYPE=$platform_type RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
 else
-  for arch in SRPMS i585 x86_64 ; do
+  for arch in SRPMS i586 x86_64 ; do
     main_folder=$repository_path/$arch/$rep_name
     rpm_backup="$main_folder/$status-rpm-backup"
     rpm_new="$main_folder/$status-rpm-new"

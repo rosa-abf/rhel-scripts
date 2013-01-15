@@ -28,7 +28,7 @@ if [ "$platform_type" == 'mdv' ] ; then
   m_info_folder='media_info'
 fi
 
-for arch in SRPMS i585 x86_64 ; do
+for arch in SRPMS i586 x86_64 ; do
   main_folder=$repository_path/$arch/$rep_name
   rpm_backup="$main_folder/$status-rpm-backup"
   m_info_backup="$main_folder/$status-$m_info_folder-backup"
