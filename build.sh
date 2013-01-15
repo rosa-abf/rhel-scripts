@@ -44,6 +44,7 @@ mkdir -p $repository_path/{SRPMS,i585,x86_64}/$rep_name/$status/$m_info_folder
 
 
 rx=0
+update_repo=1
 arches="SRPMS i585 x86_64"
 file_store_url='http://file-store.rosalinux.ru/api/v1/file_stores'
 for arch in $arches ; do
@@ -74,8 +75,7 @@ for arch in $arches ; do
     done
     mv $rpm_new/* $main_folder/$status/
   else
-    rm -rf $rpm_backup $rpm_new $m_info_backup
-    break
+    update_repo=0
   fi  
   rm -rf $rpm_new
 
@@ -88,6 +88,12 @@ for arch in $arches ; do
         mv $package $rpm_backup/
       fi
     done
+  else
+    update_repo=1
+  fi  
+
+  if [ $update_repo != 1 ] ; then
+    break
   fi  
 
   # Build repo
