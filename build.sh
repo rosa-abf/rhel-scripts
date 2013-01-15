@@ -32,14 +32,16 @@ status='release'
 if [ "$released" == 'true' ] ; then
   status='updates'
 fi
-# Checks that 'repository' directory exist
-mkdir -p $repository_path/{SRPMS,i585,x86_64}/$rep_name/$status
 
 # Defines "media_info"/"repodata" folder
 m_info_folder='repodata'
 if [ "$platform_type" == 'mdv' ] ; then
   m_info_folder='media_info'
 fi
+
+# Checks that 'repository' directory exist
+mkdir -p $repository_path/{SRPMS,i585,x86_64}/$rep_name/$status/$m_info_folder
+
 
 rx=0
 arches="SRPMS i585 x86_64"
