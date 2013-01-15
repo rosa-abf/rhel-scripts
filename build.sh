@@ -179,9 +179,11 @@ for rpm in $rpm_path/*.rpm $src_rpm_path/*.src.rpm ; do
     fullname=`basename $rpm`
     version=`rpm -qp --queryformat %{VERSION} $rpm`
     release=`rpm -qp --queryformat %{RELEASE} $rpm`
+    sha1=`sha1sum $rpm | awk '{ print $1 }'`
 
     echo '{' >> $c_data
     echo "\"fullname\":\"$fullname\","  >> $c_data
+    echo "\"sha1\":\"$sha1\","          >> $c_data
     echo "\"name\":\"$name\","          >> $c_data
     echo "\"version\":\"$version\","    >> $c_data
     echo "\"release\":\"$release\""     >> $c_data
@@ -191,3 +193,12 @@ done
 # Add '{}'' because ',' before
 echo '{}' >> $c_data
 echo ']' >> $c_data
+
+# Move all rpms into results folder
+echo "--> mv $rpm_path/*.rpm $results_path/"
+mv $rpm_path/*.rpm $results_path/
+echo "--> mv $src_rpm_path/*.rpm $results_path/"
+mv $src_rpm_path/*.rpm $results_path/
+
+# Remove archives folder
+rm -rf $archives_path
