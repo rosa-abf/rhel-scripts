@@ -113,6 +113,7 @@ for arch in $arches ; do
       rm server-comps_xml-master.tar.gz
     fi
 
+    rm -rf .olddata
     echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
     createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
     # Save exit code
