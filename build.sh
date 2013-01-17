@@ -83,7 +83,7 @@ for arch in $arches ; do
   old_packages="$container_path/old.$arch.list"
   if [ -f "$old_packages" ]; then
     for fullname in `cat $old_packages` ; do
-      package=$rpm_backup/$status/$fullname
+      package=$main_folder/$status/$fullname
       if [ -f "$package" ]; then
         mv $package $rpm_backup/
       fi
