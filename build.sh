@@ -85,6 +85,7 @@ for arch in $arches ; do
     for fullname in `cat $old_packages` ; do
       package=$main_folder/$status/$fullname
       if [ -f "$package" ]; then
+        echo "mv $package $rpm_backup/"
         mv $package $rpm_backup/
       fi
     done
