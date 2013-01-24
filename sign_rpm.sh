@@ -12,7 +12,9 @@ fi
 # Hot fix
 # TODO: Fix me!!!
 # see: http://file-store.rosalinux.ru/api/v1/file_stores/6af8c79d307b437a56a01b031e052b88b1d310d8.log?show=true
-# cp -rf $gnupg_path /root/.gnupg
+gpg --list-keys
+cp -rf $gnupg_path /root/.gnupg
+gpg --list-keys
 rpmmacros=~/.rpmmacros
 
 rm -f $rpmmacros
@@ -22,7 +24,6 @@ echo "%_gpg_name $keyname"    >> $rpmmacros
 echo "%_gpg_path $gnupg_path" >> $rpmmacros
 echo "%_gpgbin /usr/bin/gpg"  >> $rpmmacros
 
-gpg --list-keys
 echo "keyname: $keyname"
 rpm -vv --addsign $rpm_path
 # rpm -vv --addsign  $rpm_path --define="_gpg_path $gnupg_path" --define="_gpg_name $keyname" --define="_signature gpg" --define="_gpgbin /usr/bin/gpg"
