@@ -11,7 +11,7 @@ if [ ! -d "$gnupg_path" ]; then
 fi
 
 keyname=`gpg --with-fingerprint $gnupg_path/secring.gpg | sed -n 1p | awk '{ print $2 }' | awk '{ sub(/.*\//, ""); print }'`
-rpm --addsign $rpm_path --define="_gpg_path $gnupg_path" --define="_gpg_name $keyname"
+rpm -vv --addsign $rpm_path --define="_gpg_path $gnupg_path" --define="_gpg_name $keyname"
 # Save exit code
 rc=$?
 
