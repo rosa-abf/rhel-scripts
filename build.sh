@@ -92,7 +92,7 @@ for arch in $arches ; do
   rm -rf $rpm_new
 
   if [ $update_repo != 1 ] ; then
-    break
+    continue
   fi  
 
   # Build repo
