@@ -10,8 +10,10 @@ if [ ! -d "$gnupg_path" ]; then
   exit 0
 fi
 
+rm -rf ~/.rpmmacros
+
 keyname=`gpg --with-fingerprint $gnupg_path/secring.gpg | sed -n 1p | awk '{ print $2 }' | awk '{ sub(/.*\//, ""); print }'`
-rpm -vv --addsign $rpm_path --define="_gpg_path $gnupg_path" --define="_gpg_name $keyname"
+rpm -vv --  $rpm_path --define="_gpg_path $gnupg_path" --define="_gpg_name $keyname" --define="_signature gpg"
 # Save exit code
 rc=$?
 
