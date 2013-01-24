@@ -23,7 +23,7 @@ echo "%_signature gpg"        >> $rpmmacros
 echo "%_gpg_name $keyname"    >> $rpmmacros
 echo "%_gpg_path $gnupg_path" >> $rpmmacros
 echo "%_gpgbin /usr/bin/gpg"  >> $rpmmacros
-echo "%__gpg /usr/bin/gpg"  >> $rpmmacros
+echo "%__gpg /usr/bin/gpg"    >> $rpmmacros
 
 echo "keyname: $keyname"
 rpm -vv --addsign $rpm_path
