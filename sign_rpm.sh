@@ -1,4 +1,5 @@
 #!/bin/sh
+#!/usr/bin/expect -f
 
 echo '--> publish-build-list-script: sign_rpm.sh'
 
@@ -11,15 +12,17 @@ if [ ! -d "$gnupg_path" ]; then
 fi
 
 keyname=`gpg --with-fingerprint $gnupg_path/secring.gpg | sed -n 1p | awk '{ print $2 }' | awk '{ sub(/.*\//, ""); print }'`
-rpm --addsign $rpm_path --define="_gpg_path ~/.gnupg" --define="_gpg_name $keyname"
+spawn rpm --addsign $rpm_path --define="_gpg_path $gnupg_path" --define="_gpg_name $keyname"
+  expect -exact "Enter pass phrase: "
+  send -- "\r"
+expect eof
 # Save exit code
 rc=$?
 
-printf "--> Package '$rpm_path' has"
 if [[ $rc == 0 ]] ; then
-  echo 'been signed successfully.'
+  echo "--> Package '$rpm_path' has been signed successfully."
 else
-  echo 'not been signed successfully!!!'
+  echo "--> Package '$rpm_path' has not been signed successfully!!!"
 fi
 
 exit 0
