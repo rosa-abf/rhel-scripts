@@ -15,6 +15,8 @@ fi
 cp -rf $gnupg_path /root/.gnupg
 
 keyname=`gpg --with-fingerprint $gnupg_path/secring.gpg | sed -n 1p | awk '{ print $2 }' | awk '{ sub(/.*\//, ""); print }'`
+gpg --list-keys
+echo "keyname: $keyname"
 rpm -vv --  $rpm_path --define="_gpg_path $gnupg_path" --define="_gpg_name $keyname" --define="_signature gpg" --define="_gpgbin /usr/bin/gpg"
 # Save exit code
 rc=$?
