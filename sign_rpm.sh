@@ -19,9 +19,9 @@ rpmmacros=~/.rpmmacros
 
 rm -f $rpmmacros
 keyname=`gpg --with-fingerprint $gnupg_path/secring.gpg | sed -n 1p | awk '{ print $2 }' | awk '{ sub(/.*\//, ""); print }'`
-mkdir ~/rpm
-echo "%HOME %{expand:%%(cd; pwd)}" >> $rpmmacros
-echo "%_topdir %{HOME}/rpm"   >> $rpmmacros
+# mkdir ~/rpm
+# echo "%HOME %{expand:%%(cd; pwd)}" >> $rpmmacros
+# echo "%_topdir %{HOME}/rpm"   >> $rpmmacros
 echo "%_signature gpg"        >> $rpmmacros
 echo "%_gpg_name $keyname"    >> $rpmmacros
 echo "%_gpg_path $gnupg_path" >> $rpmmacros
