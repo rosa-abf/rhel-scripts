@@ -13,7 +13,7 @@ fi
 # TODO: Fix me!!!
 # see: http://file-store.rosalinux.ru/api/v1/file_stores/6af8c79d307b437a56a01b031e052b88b1d310d8.log?show=true
 gpg --list-keys
-cp -rf $gnupg_path /root/.gnupg
+cp -f $gnupg_path/* /root/.gnupg/
 gpg --list-keys
 rpmmacros=~/.rpmmacros
 
