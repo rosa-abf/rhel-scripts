@@ -83,7 +83,7 @@ for arch in $arches ; do
   if [ -f "$new_packages" ]; then
     cd $rpm_new
     for sha1 in `cat $new_packages` ; do
-      fullname=`ruby $script_path/extract_filename.rb -s $sha1`
+      fullname=`sha1=$sha1 /bin/bash $script_path/extract_filename.sh`
       if [ "$fullname" != '' ] ; then
         curl -O -L "$file_store_url/$sha1"
         mv $sha1 $fullname

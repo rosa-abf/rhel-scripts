@@ -47,7 +47,7 @@ for arch in SRPMS i586 x86_64 ; do
     new_packages="$container_path/new.$arch.list"
     if [ -f "$new_packages" ]; then
       for sha1 in `cat $new_packages` ; do
-        fullname=`ruby $script_path/extract_filename.rb -s $sha1`
+        fullname=`sha1=$sha1 /bin/bash $script_path/extract_filename.sh`
         if [ "$fullname" != '' ] ; then
           rm -f $main_folder/$status/$fullname
         fi
