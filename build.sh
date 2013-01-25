@@ -96,9 +96,9 @@ for arch in $arches ; do
           # Save exit code
           rc=$?
           if [[ $rc == 0 ]] ; then
-            echo "--> Package '$rpm_path' has been signed successfully."
+            echo "--> Package '$fullname' has been signed successfully."
           else
-            echo "--> Package '$rpm_path' has not been signed successfully!!!"
+            echo "--> Package '$fullname' has not been signed successfully!!!"
           fi
         fi 
       else
