@@ -42,6 +42,15 @@ fi
 # Checks that 'repository' directory exist
 mkdir -p $repository_path/{SRPMS,i586,x86_64}/$rep_name/$status/$m_info_folder
 
+sign_rpm=0
+gnupg_path=/home/vagrant/.gnupg
+if [ ! -d "$gnupg_path" ]; then
+  echo "--> $gnupg_path does not exist"
+else
+  sign_rpm=1
+  /bin/bash $script_path/init_rpmmacros.sh
+fi
+
 
 rx=0
 arches="SRPMS i586 x86_64"
@@ -81,7 +90,17 @@ for arch in $arches ; do
         echo $fullname >> "$new_packages.downloaded"
         chown root:root $fullname
         chmod 0666 $fullname
-        RPM_PATH=$rpm_new/$fullname /bin/bash $script_path/sign_rpm.sh
+        # Add signature to RPM
+        if [ $sign_rpm != 0 ] ; then
+          rpm --addsign $rpm_new/$fullname
+          # Save exit code
+          rc=$?
+          if [[ $rc == 0 ]] ; then
+            echo "--> Package '$rpm_path' has been signed successfully."
+          else
+            echo "--> Package '$rpm_path' has not been signed successfully!!!"
+          fi
+        fi 
       else
         echo "--> Package with sha1 '$sha1' does not exist!!!"
       fi

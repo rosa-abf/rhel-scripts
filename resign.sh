@@ -12,19 +12,24 @@ rep_name="$REPOSITORY_NAME"
 # - http://abf.rosalinux.ru/downloads/rosa2012.1/repository
 repository_path=/home/vagrant/share_folder
 
+# Current path:
+# - /home/vagrant/publish-build-list-script
+script_path=/home/vagrant/publish-build-list-script
+
 gnupg_path=/home/vagrant/.gnupg
 if [ ! -d "$gnupg_path" ]; then
   echo "--> $gnupg_path does not exist"
   exit 0
 fi
 
-keyname=`gpg --with-fingerprint $gnupg_path/secring.gpg | sed -n 1p | awk '{ print $2 }' | awk '{ sub(/.*\//, ""); print }'`
+/bin/bash $script_path/init_rpmmacros.sh
+
 
 function resign_all_rpm_in_folder {
   folder=$1
   if [ -d "$folder" ]; then
     for file in $( ls -1 $folder/ | grep .rpm$ ) ; do
-      rpm --addsign $folder/$file --define="_gpg_path ~/.gnupg" --define="_gpg_name $keyname"
+      rpm --addsign $folder/$file
     done
   fi
 }
