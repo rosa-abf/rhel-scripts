@@ -100,6 +100,7 @@ for arch in $arches ; do
           else
             echo "--> Package '$fullname' has not been signed successfully!!!"
           fi
+          chmod 0666 $rpm_new/$fullname
         fi 
       else
         echo "--> Package with sha1 '$sha1' does not exist!!!"
