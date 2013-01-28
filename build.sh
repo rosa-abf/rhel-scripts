@@ -62,8 +62,8 @@ for arch in $arches ; do
   rpm_new="$main_folder/$status-rpm-new"
   m_info_backup="$main_folder/$status-$m_info_folder-backup"
   rm -rf $rpm_backup $rpm_new $m_info_backup
-  mkdir {$rpm_backup,$rpm_new,$m_info_backup}
-  cp -rf $main_folder/$status/$m_info_folder/* $m_info_backup/
+  mkdir {$rpm_backup,$rpm_new}
+  cp -rf $main_folder/$status/$m_info_folder $m_info_backup
 
   # Creates backup
   old_packages="$container_path/old.$arch.list"
