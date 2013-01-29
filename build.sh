@@ -102,6 +102,9 @@ if [ "$distrib_type" == 'mdv' ] ; then
   echo "Will be use 'mock-urpm'..."
   mock_command="mock-urpm"
   config_dir=/etc/mock-urpm/
+  # Change output format for mock-urpm
+  sed '17c/format: %(message)s' $config_dir/logging.ini > ~/logging.ini
+  sudo mv -f ~/logging.ini $config_dir/logging.ini
 fi
 
 # Init config file
