@@ -39,7 +39,7 @@ for arch in SRPMS i586 x86_64 ; do
 
   if [ -d "$m_info_backup" ] && [ "$(ls -A $m_info_backup)" ]; then
     rm -rf $main_folder/$status/$m_info_folder
-    cp -rf $main_folder/$status/$m_info_folder $m_info_backup
+    cp -rf $m_info_backup $main_folder/$status/$m_info_folder
     rm -rf $m_info_backup
   fi
 
