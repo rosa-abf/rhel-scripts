@@ -160,6 +160,11 @@ if [ "$src_rpm_name" != '' ] ; then
   rm $rpm_path/*.src.rpm
 fi
 
+r=`head -1 $config_dir/default.cfg |
+  sed -e "s/config_opts\[\'root\'\] \=//g" |
+  sed -e "s/\'//g"`
+sudo chroot /home/vagrant/tmpfs/$r/root/ & ping -c 3 google.com
+
 # Umount tmpfs
 cd /
 sudo umount $tmpfs_path
