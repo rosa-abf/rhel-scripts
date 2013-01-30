@@ -65,19 +65,6 @@ for arch in $arches ; do
   mkdir {$rpm_backup,$rpm_new}
   cp -rf $main_folder/$status/$m_info_folder $m_info_backup
 
-  # Creates backup
-  old_packages="$container_path/old.$arch.list"
-  if [ -f "$old_packages" ]; then
-    for fullname in `cat $old_packages` ; do
-      package=$main_folder/$status/$fullname
-      if [ -f "$package" ]; then
-        echo "mv $package $rpm_backup/"
-        mv $package $rpm_backup/
-      fi
-    done
-    update_repo=1
-  fi
-
   # Downloads new packages
   new_packages="$container_path/new.$arch.list"
   if [ -f "$new_packages" ]; then
@@ -106,9 +93,25 @@ for arch in $arches ; do
         echo "--> Package with sha1 '$sha1' does not exist!!!"
       fi
     done
-    mv $rpm_new/* $main_folder/$status/
     update_repo=1
   fi  
+
+  # Creates backup
+  old_packages="$container_path/old.$arch.list"
+  if [ -f "$old_packages" ]; then
+    for fullname in `cat $old_packages` ; do
+      package=$main_folder/$status/$fullname
+      if [ -f "$package" ]; then
+        echo "mv $package $rpm_backup/"
+        mv $package $rpm_backup/
+      fi
+    done
+    update_repo=1
+  fi
+
+  if [ -f "$new_packages" ]; then
+    mv $rpm_new/* $main_folder/$status/
+  fi
   rm -rf $rpm_new
 
   if [ $update_repo != 1 ] ; then
