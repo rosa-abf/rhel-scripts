@@ -29,7 +29,9 @@ function resign_all_rpm_in_folder {
   folder=$1
   if [ -d "$folder" ]; then
     for file in $( ls -1 $folder/ | grep .rpm$ ) ; do
+      chmod 0666 $folder/$file
       rpm --addsign $folder/$file
+      chmod 0644 $folder/$file
     done
   fi
 }
