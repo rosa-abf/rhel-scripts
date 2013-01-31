@@ -168,7 +168,9 @@ r=`head -1 $config_dir/default.cfg |
   sed -e "s/=//g" |
   sed -e "s/'//g"|
   sed -e "s/ //g"`
-sudo chroot /home/vagrant/tmpfs/$r/root & ping -c 3 google.com
+ls -la $tmpfs_path
+ls -la $tmpfs_path/$r
+sudo chroot $tmpfs_path/$r/root & ping -c 3 google.com
 
 # Umount tmpfs
 cd /
