@@ -76,9 +76,9 @@ for arch in $arches ; do
         mv $sha1 $fullname
         echo $fullname >> "$new_packages.downloaded"
         chown root:root $fullname
-        chmod 0666 $fullname
         # Add signature to RPM
         if [ $sign_rpm != 0 ] ; then
+          chmod 0666 $fullname
           rpm --addsign $rpm_new/$fullname
           # Save exit code
           rc=$?
@@ -87,8 +87,8 @@ for arch in $arches ; do
           else
             echo "--> Package '$fullname' has not been signed successfully!!!"
           fi
-          chmod 0666 $rpm_new/$fullname
         fi 
+        chmod 0644 $rpm_new/$fullname
       else
         echo "--> Package with sha1 '$sha1' does not exist!!!"
       fi
