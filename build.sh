@@ -168,8 +168,8 @@ r=`head -1 $config_dir/default.cfg |
   sed -e "s/=//g" |
   sed -e "s/'//g"|
   sed -e "s/ //g"`
-echo '--> Checks internet connection...'
 chroot_path=$tmpfs_path/$r/root
+# echo '--> Checks internet connection...'
 # sudo chroot $chroot_path ping -c 1 google.com
 
 test_log=$results_path/tests.log
