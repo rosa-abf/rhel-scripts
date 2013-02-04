@@ -172,23 +172,38 @@ chroot_path=$tmpfs_path/$r/root
 # echo '--> Checks internet connection...'
 # sudo chroot $chroot_path ping -c 1 google.com
 
+# Tests
 test_log=$results_path/tests.log
-for file in $( ls -1 $rpm_path/ | grep .rpm$ ) ; do
-  f=$rpm_path/$file
-  if [ "$distrib_type" == 'mdv' ] ; then
-    sudo urpmi --test $f --root $chroot_path --auto >> $test_log 2>&1
-  else
-    sudo yum --installroot=$chroot_path install -y $f >> $test_log 2>&1
-  fi
-done
+if [[ $rc == 0 ]] ; then
+  for file in $( ls -1 $rpm_path/ | grep .rpm$ ) ; do
+    f=$rpm_path/$file
+    if [ "$distrib_type" == 'mdv' ] ; then
+      sudo urpmi -v --test $f --root $chroot_path --auto >> $test_log 2>&1
+      rc=$?
+    else
+      sudo yum -v --installroot=$chroot_path install -y $f >> $test_log 2>&1
+      rc=$?
+    fi
+    if [[ $rc != 0 ]] ; then
+      echo '--> Test failed, see: tests.log'
+      break
+    fi
+  done
+fi
 
-for file in $( ls -1 $src_rpm_path/ | grep .rpm$ ) ; do
-  f=$src_rpm_path/$file
-  if [ "$distrib_type" == 'mdv' ] ; then
-    sudo urpmi --test --buildrequires $f --root $chroot_path --auto >> $test_log 2>&1
-  fi
-done
-
+if [[ $rc == 0 ]] ; then
+  for file in $( ls -1 $src_rpm_path/ | grep .rpm$ ) ; do
+    f=$src_rpm_path/$file
+    if [ "$distrib_type" == 'mdv' ] ; then
+      sudo urpmi -v --test --buildrequires $f --root $chroot_path --auto >> $test_log 2>&1
+      rc=$?
+    fi
+    if [[ $rc != 0 ]] ; then
+      echo '--> Test failed, see: tests.log'
+      break
+    fi
+  done
+fi
 # Umount tmpfs
 cd /
 sudo umount $tmpfs_path
@@ -199,7 +214,7 @@ move_logs $rpm_path 'rpm'
 
 # Check exit code after build
 if [[ $rc != 0 ]] ; then
-  echo '--> Build failed: mock-urpm problem.'
+  echo '--> Build failed!!!'
   exit $rc
 fi
 
