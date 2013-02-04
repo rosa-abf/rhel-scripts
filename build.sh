@@ -176,7 +176,7 @@ chroot_path=$tmpfs_path/$r/root
 test_log=$results_path/tests.log
 if [[ $rc == 0 ]] ; then
   if [ "$distrib_type" == 'mdv' ] ; then
-    sudo urpmi -v --test $rpm_path/*.rpm --root $chroot_path --auto >> $test_log 2>&1
+    sudo urpmi -v --test $rpm_path/*.rpm --root $chroot_path --urpmi-root $chroot_path --auto >> $test_log 2>&1
     rc=$?
   else
     sudo yum -v --installroot=$chroot_path install -y $rpm_path/*.rpm >> $test_log 2>&1
@@ -189,7 +189,7 @@ fi
 
 if [[ $rc == 0 ]] ; then
   if [ "$distrib_type" == 'mdv' ] ; then
-    sudo urpmi -v --test --buildrequires $src_rpm_path/*.rpm --root $chroot_path --auto >> $test_log 2>&1
+    sudo urpmi -v --test --buildrequires $src_rpm_path/*.rpm --root $chroot_path --urpmi-root $chroot_path --auto >> $test_log 2>&1
     rc=$?
   fi
   if [[ $rc != 0 ]] ; then
