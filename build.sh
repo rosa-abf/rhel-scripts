@@ -135,7 +135,8 @@ for arch in $arches ; do
       cd $script_path/
     fi
 
-    rm -rf .olddata
+    rm -rf .olddata $main_folder/$status/.olddata
+    
     echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
     createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
     # Save exit code
