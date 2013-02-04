@@ -195,6 +195,7 @@ if [[ $rc == 0 ]] ; then
   for file in $( ls -1 $src_rpm_path/ | grep .rpm$ ) ; do
     f=$src_rpm_path/$file
     if [ "$distrib_type" == 'mdv' ] ; then
+      echo "Testing '$file'..."
       sudo urpmi -v --test --buildrequires $f --root $chroot_path --auto >> $test_log 2>&1
       rc=$?
     fi
