@@ -178,7 +178,7 @@ for file in $( ls -1 $rpm_path/ | grep .rpm$ ) ; do
   if [ "$distrib_type" == 'mdv' ] ; then
     sudo urpmi --test $f --root $chroot_path --auto >> $test_log 2>&1
   else
-    sudo yum --installroot=$chroot_path install -y $f >> $test_log 2>&1
+    sudo yum --installroot=$chroot_path install -y $f --auto >> $test_log 2>&1
   fi
 done
 
