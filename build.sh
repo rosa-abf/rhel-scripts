@@ -185,8 +185,10 @@ done
 
 ls -la $src_rpm_path/ >> $test_log
 for file in $( ls -1 $src_rpm_path/ | grep .rpm$ ) ; do
+  f=$rpm_path/$file
   if [ "$distrib_type" == 'mdv' ] ; then
-    sudo urpmi --test $rpm_path/$file --root $chroot_path --auto --buildrequires >> $test_log 2>&1
+    chmod 0666 $f
+    sudo urpmi --test $f --root $chroot_path --auto --buildrequires >> $test_log 2>&1
   fi
 done
 
