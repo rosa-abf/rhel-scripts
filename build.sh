@@ -132,6 +132,7 @@ for arch in $arches ; do
       curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/server-comps_xml-master.tar.gz
       tar -xzf server-comps_xml-master.tar.gz
       rm server-comps_xml-master.tar.gz
+      cd $script_path/
     fi
 
     rm -rf .olddata
