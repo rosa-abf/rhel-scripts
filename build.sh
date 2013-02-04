@@ -168,9 +168,25 @@ r=`head -1 $config_dir/default.cfg |
   sed -e "s/=//g" |
   sed -e "s/'//g"|
   sed -e "s/ //g"`
-ls -la $tmpfs_path
-ls -la $tmpfs_path/$r
-sudo chroot $tmpfs_path/$r/root ping -c 3 google.com
+echo '--> Checks internet connection...'
+chroot_path=$tmpfs_path/$r/root
+# sudo chroot $chroot_path ping -c 1 google.com
+
+test_log=$results_path/tests.log
+for file in $( ls -1 $rpm_path/ | grep .rpm$ ) ; do
+  f=$rpm_path/$file
+  if [ "$distrib_type" == 'mdv' ] ; then
+    sudo urpmi --test $f --root $chroot_path --auto >> $test_log 2>&1
+  else
+    sudo yum --installroot=$chroot_path install -y $f >> $test_log 2>&1
+  fi
+done
+
+for file in $( ls -1 $src_rpm_path/ | grep .rpm$ ) ; do
+  if [ "$distrib_type" == 'mdv' ] ; then
+    sudo urpmi --test $rpm_path/$file --root $chroot_path --auto --buildrequires >> $test_log 2>&1
+  fi
+done
 
 # Umount tmpfs
 cd /
