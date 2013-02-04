@@ -145,7 +145,7 @@ fi
 cd $src_rpm_path
 src_rpm_name=`ls -1 | grep 'src.rpm$'`
 echo '--> Build rpm'
-$mock_command $src_rpm_name --resultdir $rpm_path -v
+$mock_command $src_rpm_name --resultdir $rpm_path -v --no-cleanup-after
 # Save exit code
 rc=$?
 echo '--> Done.'
@@ -160,17 +160,17 @@ if [ "$src_rpm_name" != '' ] ; then
   rm $rpm_path/*.src.rpm
 fi
 
-# r=`head -1 $config_dir/default.cfg |
-#   sed -e "s/config_opts//g" |
-#   sed -e "s/\[//g" |
-#   sed -e "s/\]//g" |
-#   sed -e "s/root//g" |
-#   sed -e "s/=//g" |
-#   sed -e "s/'//g"|
-#   sed -e "s/ //g"`
-# ls -la $tmpfs_path
-# ls -la $tmpfs_path/$r
-# sudo chroot $tmpfs_path/$r/root & ping -c 3 google.com
+r=`head -1 $config_dir/default.cfg |
+  sed -e "s/config_opts//g" |
+  sed -e "s/\[//g" |
+  sed -e "s/\]//g" |
+  sed -e "s/root//g" |
+  sed -e "s/=//g" |
+  sed -e "s/'//g"|
+  sed -e "s/ //g"`
+ls -la $tmpfs_path
+ls -la $tmpfs_path/$r
+sudo chroot $tmpfs_path/$r/root ping -c 3 google.com
 
 # Umount tmpfs
 cd /
