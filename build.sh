@@ -173,7 +173,6 @@ chroot_path=$tmpfs_path/$r/root
 # sudo chroot $chroot_path ping -c 1 google.com
 
 test_log=$results_path/tests.log
-ls -la $rpm_path/ >> $test_log
 for file in $( ls -1 $rpm_path/ | grep .rpm$ ) ; do
   f=$rpm_path/$file
   if [ "$distrib_type" == 'mdv' ] ; then
@@ -183,12 +182,10 @@ for file in $( ls -1 $rpm_path/ | grep .rpm$ ) ; do
   fi
 done
 
-ls -la $src_rpm_path/ >> $test_log
 for file in $( ls -1 $src_rpm_path/ | grep .rpm$ ) ; do
   f=$rpm_path/$file
   if [ "$distrib_type" == 'mdv' ] ; then
-    chmod 0666 $f
-    sudo urpmi --test $f --root $chroot_path --auto --buildrequires >> $test_log 2>&1
+    sudo urpmi --test --buildrequires $f --root $chroot_path --auto >> $test_log 2>&1
   fi
 done
 
