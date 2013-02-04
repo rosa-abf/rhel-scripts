@@ -185,7 +185,7 @@ done
 for file in $( ls -1 $src_rpm_path/ | grep .rpm$ ) ; do
   f=$rpm_path/$file
   if [ "$distrib_type" == 'mdv' ] ; then
-    sudo urpmi --test --buildrequires $f --root $chroot_path --auto >> $test_log 2>&1
+    sudo urpmi -v --test --buildrequires $f --root $chroot_path --auto >> $test_log 2>&1
   fi
 done
 
