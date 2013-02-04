@@ -189,7 +189,6 @@ fi
 
 if [[ $rc == 0 ]] ; then
   if [ "$distrib_type" == 'mdv' ] ; then
-    echo "Testing '$file'..." >> $test_log
     sudo urpmi -v --test --buildrequires $src_rpm_path/*.rpm --root $chroot_path --auto >> $test_log 2>&1
     rc=$?
   fi
