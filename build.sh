@@ -175,35 +175,27 @@ chroot_path=$tmpfs_path/$r/root
 # Tests
 test_log=$results_path/tests.log
 if [[ $rc == 0 ]] ; then
-  for file in $( ls -1 $rpm_path/ | grep .rpm$ ) ; do
-    f=$rpm_path/$file
-    if [ "$distrib_type" == 'mdv' ] ; then
-      sudo urpmi -v --test $f --root $chroot_path --auto >> $test_log 2>&1
-      rc=$?
-    else
-      sudo yum -v --installroot=$chroot_path install -y $f >> $test_log 2>&1
-      rc=$?
-    fi
-    if [[ $rc != 0 ]] ; then
-      echo '--> Test failed, see: tests.log'
-      break
-    fi
-  done
+  if [ "$distrib_type" == 'mdv' ] ; then
+    sudo urpmi -v --test $rpm_path/*.rpm --root $chroot_path --auto >> $test_log 2>&1
+    rc=$?
+  else
+    sudo yum -v --installroot=$chroot_path install -y $rpm_path/*.rpm >> $test_log 2>&1
+    rc=$?
+  fi
+  if [[ $rc != 0 ]] ; then
+    echo '--> Test failed, see: tests.log'
+  fi
 fi
 
 if [[ $rc == 0 ]] ; then
-  for file in $( ls -1 $src_rpm_path/ | grep .rpm$ ) ; do
-    f=$src_rpm_path/$file
-    if [ "$distrib_type" == 'mdv' ] ; then
-      echo "Testing '$file'..." >> $test_log
-      sudo urpmi -v --test --buildrequires $f --root $chroot_path --auto >> $test_log 2>&1
-      rc=$?
-    fi
-    if [[ $rc != 0 ]] ; then
-      echo '--> Test failed, see: tests.log'
-      break
-    fi
-  done
+  if [ "$distrib_type" == 'mdv' ] ; then
+    echo "Testing '$file'..." >> $test_log
+    sudo urpmi -v --test --buildrequires $src_rpm_path/*.rpm --root $chroot_path --auto >> $test_log 2>&1
+    rc=$?
+  fi
+  if [[ $rc != 0 ]] ; then
+    echo '--> Test failed, see: tests.log'
+  fi
 fi
 # Umount tmpfs
 cd /
