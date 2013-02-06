@@ -42,16 +42,13 @@ rpm_build_script_path=`pwd`
 # sudo urpmi rpm-build --auto
 # sudo urpmi python-gitpython --auto
 # sudo urpmi ruby --auto
-
-mkdir $archives_path
-mkdir $results_path
+rm -rf $archives_path $results_path $tmpfs_path $project_path
+mkdir  $archives_path $results_path $tmpfs_path $project_path
 
 # Mount tmpfs
-mkdir $tmpfs_path
 sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
 
 # Download project
-mkdir $project_path
 # Fix for: 'fatal: index-pack failed'
 git config --global core.compression -1
 git clone $git_project_address $project_path
