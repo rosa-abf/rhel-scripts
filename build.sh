@@ -172,6 +172,7 @@ chroot_path=$tmpfs_path/$r/root
 # Tests
 test_log=$results_path/tests.log
 if [[ $rc == 0 ]] ; then
+  ls -la $rpm_path/ >> $test_log
   if [ "$distrib_type" == 'mdv' ] ; then
     sudo urpmi -v --test $rpm_path/*.rpm --root $chroot_path --urpmi-root $chroot_path --auto >> $test_log 2>&1
     rc=$?
@@ -185,6 +186,7 @@ if [[ $rc == 0 ]] ; then
 fi
 
 if [[ $rc == 0 ]] ; then
+  ls -la $src_rpm_path/ >> $test_log
   if [ "$distrib_type" == 'mdv' ] ; then
     sudo urpmi -v --test --buildrequires $src_rpm_path/*.rpm --root $chroot_path --urpmi-root $chroot_path --auto >> $test_log 2>&1
     rc=$?
