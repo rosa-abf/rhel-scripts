@@ -171,11 +171,14 @@ chroot_path=$tmpfs_path/$r/root
 
 # Tests
 test_log=$results_path/tests.log
+test_root=$tmpfs_path/test-root
 if [[ $rc == 0 ]] ; then
   ls -la $rpm_path/ >> $test_log
   if [ "$distrib_type" == 'mdv' ] ; then
-    sudo urpmi -v --test $rpm_path/*.rpm --root $chroot_path --urpmi-root $chroot_path --auto >> $test_log 2>&1
+    mkdir $test_root
+    sudo urpmi -v --test $rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
     rc=$?
+    rm -rf $test_root
   else
     sudo yum -v --installroot=$chroot_path install -y $rpm_path/*.rpm >> $test_log 2>&1
     rc=$?
@@ -188,8 +191,10 @@ fi
 if [[ $rc == 0 ]] ; then
   ls -la $src_rpm_path/ >> $test_log
   if [ "$distrib_type" == 'mdv' ] ; then
-    sudo urpmi -v --test --buildrequires $src_rpm_path/*.rpm --root $chroot_path --urpmi-root $chroot_path --auto >> $test_log 2>&1
+    mkdir $test_root
+    sudo urpmi -v --test --buildrequires $src_rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
     rc=$?
+    rm -rf $test_root
   fi
   if [[ $rc != 0 ]] ; then
     echo '--> Test failed, see: tests.log'
