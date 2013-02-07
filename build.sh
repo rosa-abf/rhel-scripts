@@ -176,7 +176,7 @@ if [[ $rc == 0 ]] ; then
   ls -la $rpm_path/ >> $test_log
   if [ "$distrib_type" == 'mdv' ] ; then
     mkdir $test_root
-    sudo urpmi -v --test $rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
+    sudo urpmi -v --debug --no-verify --test $rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
     rc=$?
     rm -rf $test_root
   else
@@ -192,7 +192,7 @@ if [[ $rc == 0 ]] ; then
   ls -la $src_rpm_path/ >> $test_log
   if [ "$distrib_type" == 'mdv' ] ; then
     mkdir $test_root
-    sudo urpmi -v --test --buildrequires $src_rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
+    sudo urpmi -v --debug --no-verify --test --buildrequires $src_rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
     rc=$?
     rm -rf $test_root
   fi
