@@ -204,12 +204,6 @@ rm -rf $tmpfs_path
 
 move_logs $rpm_path 'rpm'
 
-# Check exit code after testing
-if [ $test_code != 0 ] ; then
-  echo '--> Test failed, see: tests.log'
-  exit 5
-fi
-
 # Check exit code after build
 if [ $rc != 0 ] ; then
   echo '--> Build failed!!!'
@@ -248,4 +242,11 @@ mv $src_rpm_path/*.rpm $results_path/
 
 # Remove archives folder
 rm -rf $archives_path
+
+# Check exit code after testing
+if [ $test_code != 0 ] ; then
+  echo '--> Test failed, see: tests.log'
+  exit 5
+fi
+
 exit 0
