@@ -200,6 +200,8 @@ if [[ $rc == 0 ]] ; then
     echo '--> Test failed, see: tests.log'
   fi
 fi
+#temporary
+df
 # Umount tmpfs
 cd /
 sudo umount $tmpfs_path
