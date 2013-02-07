@@ -175,9 +175,10 @@ test_root=$tmpfs_path/test-root
 test_code=0
 if [ $rc == 0 ] ; then
   ls -la $rpm_path/ >> $test_log
+  rpm -qa --queryformat "%{name}-%{version}-%{release}.%{arch}.%{disttag}%{distepoch}\n" --root $chroot_path
   if [ "$distrib_type" == 'mdv' ] ; then
     mkdir $test_root
-    sudo urpmi -v --debug --no-verify --test $rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
+    sudo urpmi -v --debug --no-suggests --test $rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
   else
     sudo yum -v --installroot=$chroot_path install -y $rpm_path/*.rpm >> $test_log 2>&1
   fi
