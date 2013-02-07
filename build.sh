@@ -133,9 +133,9 @@ function move_logs {
 move_logs $src_rpm_path 'src-rpm'
 
 # Check exit code after build
-if [[ $rc != 0 ]] ; then
+if [ $rc != 0 ] ; then
   echo '--> Build failed: mock-urpm problem.'
-  exit $rc
+  exit 1
 fi
 
 # Build rpm
@@ -172,32 +172,26 @@ chroot_path=$tmpfs_path/$r/root
 # Tests
 test_log=$results_path/tests.log
 test_root=$tmpfs_path/test-root
-if [[ $rc == 0 ]] ; then
+test_code=0
+if [ $rc == 0 ] ; then
   ls -la $rpm_path/ >> $test_log
   if [ "$distrib_type" == 'mdv' ] ; then
     mkdir $test_root
     sudo urpmi -v --debug --no-verify --test $rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
-    rc=$?
-    rm -rf $test_root
   else
     sudo yum -v --installroot=$chroot_path install -y $rpm_path/*.rpm >> $test_log 2>&1
-    rc=$?
   fi
-  if [[ $rc != 0 ]] ; then
-    echo '--> Test failed, see: tests.log'
-  fi
+  test_code=$?
+  rm -rf $test_root
 fi
 
-if [[ $rc == 0 ]] ; then
+if [ $rc == 0 ] && [ $test_code == 0 ] ; then
   ls -la $src_rpm_path/ >> $test_log
   if [ "$distrib_type" == 'mdv' ] ; then
     mkdir $test_root
     sudo urpmi -v --debug --no-verify --test --buildrequires $src_rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
-    rc=$?
+    test_code=$?
     rm -rf $test_root
-  fi
-  if [[ $rc != 0 ]] ; then
-    echo '--> Test failed, see: tests.log'
   fi
 fi
 #temporary
@@ -210,10 +204,16 @@ rm -rf $tmpfs_path
 
 move_logs $rpm_path 'rpm'
 
+# Check exit code after testing
+if [ $test_code != 0 ] ; then
+  echo '--> Test failed, see: tests.log'
+  exit 5
+fi
+
 # Check exit code after build
-if [[ $rc != 0 ]] ; then
+if [ $rc != 0 ] ; then
   echo '--> Build failed!!!'
-  exit $rc
+  exit 1
 fi
 
 # Generate data for container
@@ -248,3 +248,4 @@ mv $src_rpm_path/*.rpm $results_path/
 
 # Remove archives folder
 rm -rf $archives_path
+exit 0
