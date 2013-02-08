@@ -8,4 +8,4 @@ config_opts['cache_topdir'] = '/home/vagrant/tmpfs/cache'
 config_opts['use_system_media'] = False
 
 
-для mdv и rhel необходимо отдельно подключать репозитории
+For "rhel" and "mdv" repositories should be connected separately
