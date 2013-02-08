@@ -3,12 +3,4 @@ See: https://abf.rosalinux.ru/abf/rpm-build-script
 
 # default.cfg should be created before running script!!!!
 
-
-config_opts['plugin_conf']['root_cache_enable'] = False
-config_opts['basedir'] = '/home/vagrant/tmpfs'
-config_opts['cache_topdir'] = '/home/vagrant/tmpfs/cache'
-
-config_opts['use_system_media'] = False
-
-
 "rhel" and "mdv" repositories should be connected separately
