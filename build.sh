@@ -195,8 +195,11 @@ if [ $rc == 0 ] && [ $test_code == 0 ] ; then
     rm -rf $test_root
   fi
 fi
-#temporary
-df
+
+if [ $rc != 0 ] && [ $test_code != 0 ] ; then
+  tree $chroot_path/builddir/build/BUILDROOT >> $results_path/chroot-tree.log
+fi
+
 # Umount tmpfs
 cd /
 sudo umount $tmpfs_path
