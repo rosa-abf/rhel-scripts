@@ -197,7 +197,7 @@ if [ $rc == 0 ] && [ $test_code == 0 ] ; then
 fi
 
 if [ $rc != 0 ] || [ $test_code != 0 ] ; then
-  tree $chroot_path/builddir/build/ >> $results_path/chroot-tree.log
+  tree $chroot_path/builddir/build/BUILDROOT >> $results_path/chroot-tree.log
 fi
 
 # Umount tmpfs
