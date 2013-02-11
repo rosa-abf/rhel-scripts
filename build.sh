@@ -36,7 +36,7 @@ if [ "$released" == 'true' ] ; then
   status='updates'
 fi
 
-repo_file=$platform_path/.repo
+repo_file="$platform_path/$id.repo"
 if [ "$is_container" == 'true' ] && [ "$platform_type" == 'rhel' ] ; then
   rm -f $repo_file
 fi
