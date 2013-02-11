@@ -123,6 +123,9 @@ for arch in $arches ; do
   rm -rf $rpm_new
 
   if [ $update_repo != 1 ] ; then
+    if [ "$is_container" == 'true' ] ; then
+      rm -rf $repository_path/$arch
+    fi
     continue
   fi  
 
