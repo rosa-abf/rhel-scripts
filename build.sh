@@ -196,7 +196,7 @@ if [ $rc == 0 ] && [ $test_code == 0 ] ; then
   fi
 fi
 
-if [ $rc != 0 ] && [ $test_code != 0 ] ; then
+if [ $rc != 0 ] || [ $test_code != 0 ] ; then
   tree $chroot_path/builddir/build/BUILDROOT >> $results_path/chroot-tree.log
 fi
 
