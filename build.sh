@@ -7,6 +7,9 @@ usermod -a -G vboxsf vagrant
 platform_type="$TYPE"
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
+is_container="$IS_CONTAINER"
+id="$ID"
+platform_name="$PLATFORM_NAME"
 
 echo "TYPE = $platform_type"
 echo "RELEASED = $released"
@@ -31,6 +34,11 @@ repository_path=$platform_path
 status='release'
 if [ "$released" == 'true' ] ; then
   status='updates'
+fi
+
+repo_file=$platform_path/.repo
+if [ "$is_container" == 'true' ] && [ "$platform_type" == 'rhel' ] ; then
+  rm -f $repo_file
 fi
 
 # Defines "media_info"/"repodata" folder
@@ -146,6 +154,15 @@ for arch in $arches ; do
   # Check exit code
   if [ $rc != 0 ] ; then
     break
+  fi
+
+  if [ "$is_container" == 'true' ] && [ "$platform_type" == 'rhel' ] ; then
+    name="container-$id-$arch"
+    echo "[$name]"      >> $repo_file
+    echo "  name=$name" >> $repo_file
+    echo "  enabled=1"  >> $repo_file
+    echo "  baseurl=http://abf.rosalinux.ru/downloads/$platform_name/container/$id/$arch/$rep_name/$status" >> $repo_file
+    echo "  failovermethod=priority" >> $repo_file
   fi
 
 done
