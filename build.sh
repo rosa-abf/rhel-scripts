@@ -10,6 +10,7 @@ rep_name="$REPOSITORY_NAME"
 is_container="$IS_CONTAINER"
 id="$ID"
 platform_name="$PLATFORM_NAME"
+regenerate_metadata="$REGENERATE_METADATA"
 
 echo "TYPE = $platform_type"
 echo "RELEASED = $released"
@@ -95,14 +96,14 @@ for arch in $arches ; do
           else
             echo "--> Package '$fullname' has not been signed successfully!!!"
           fi
-        fi 
+        fi
         chmod 0644 $rpm_new/$fullname
       else
         echo "--> Package with sha1 '$sha1' does not exist!!!"
       fi
     done
     update_repo=1
-  fi  
+  fi
 
   # Creates backup
   old_packages="$container_path/old.$arch.list"
@@ -126,14 +127,21 @@ for arch in $arches ; do
     if [ "$is_container" == 'true' ] ; then
       rm -rf $repository_path/$arch
     fi
-    continue
-  fi  
+    if [ "$regenerate_metadata" != 'true' ] ; then
+      continue
+    fi
+  fi
 
   # Build repo
   cd $script_path/
   if [ "$platform_type" == 'mdv' ] ; then
-    echo "/usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info $main_folder/$status"
-    /usr/bin/genhdlist2 -v -v --nolock --allow-empty-media --xml-info "$main_folder/$status"
+    if [ "$regenerate_metadata" != 'true' ] ; then
+      _cm="/usr/bin/genhdlist2 -v --nolock --allow-empty-media --xml-info $main_folder/$status"
+    else
+      _cm="/usr/bin/genhdlist2 -v --clean --nolock --allow-empty-media --xml-info $main_folder/$status"
+    fi
+    eval "echo $_cm"
+    eval "$_cm"
     # Save exit code
     rc=$?
   else
@@ -147,9 +155,14 @@ for arch in $arches ; do
     fi
 
     rm -rf .olddata $main_folder/$status/.olddata
-    
-    echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
-    createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
+
+    if [ "$regenerate_metadata" != 'true' ] ; then
+      _cm="createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
+    else
+      _cm="createrepo -v -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
+    fi
+    eval "echo $_cm"
+    eval "$_cm"
     # Save exit code
     rc=$?
   fi
