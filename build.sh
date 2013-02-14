@@ -136,12 +136,12 @@ for arch in $arches ; do
   cd $script_path/
   if [ "$platform_type" == 'mdv' ] ; then
     if [ "$regenerate_metadata" != 'true' ] ; then
-      _cm="/usr/bin/genhdlist2 -v --nolock --allow-empty-media --xml-info $main_folder/$status"
+      echo "/usr/bin/genhdlist2 -v --nolock --allow-empty-media --xml-info $main_folder/$status"
+      /usr/bin/genhdlist2 -v --nolock --allow-empty-media --xml-info "$main_folder/$status"
     else
-      _cm="/usr/bin/genhdlist2 -v --clean --nolock --allow-empty-media --xml-info $main_folder/$status"
+      echo "/usr/bin/genhdlist2 -v --clean --nolock --allow-empty-media --xml-info $main_folder/$status"
+      /usr/bin/genhdlist2 -v --clean --nolock --allow-empty-media --xml-info "$main_folder/$status"
     fi
-    eval "echo $_cm"
-    eval "$_cm"
     # Save exit code
     rc=$?
   else
@@ -157,12 +157,12 @@ for arch in $arches ; do
     rm -rf .olddata $main_folder/$status/.olddata
 
     if [ "$regenerate_metadata" != 'true' ] ; then
-      _cm="createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
+      echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
+      createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
     else
-      _cm="createrepo -v -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
+      echo "createrepo -v -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
+      createrepo -v -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
     fi
-    eval "echo $_cm"
-    eval "$_cm"
     # Save exit code
     rc=$?
   fi
