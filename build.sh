@@ -17,8 +17,9 @@ email="$EMAIL"
 # repo="http://mirror.rosalinux.com/rosa/rosa2012.1/repository/x86_64/"
 # distrib_type="rosa2012.1"
 distrib_type="$DISTRIB_TYPE"
+platform_name="$PLATFORM_NAME"
+platform_arch="$ARCH"
 # distrib_type="mdv"
-# arch="$ARCH"
 # arch="x86_64"
 
 echo $git_project_address | awk '{ gsub(/\:\/\/.*\:\@/, "://[FILTERED]@"); print }'
@@ -93,8 +94,10 @@ mkdir $src_rpm_path
 rpm_path=$archives_path/RPM
 mkdir $rpm_path
 
+
 mock_command="mock"
 config_dir=/etc/mock/
+config_name="$distrib_type-$platform_arch.cfg"
 if [ "$distrib_type" == 'mdv' ] ; then
   echo "Will be use 'mock-urpm'..."
   mock_command="mock-urpm"
@@ -102,12 +105,63 @@ if [ "$distrib_type" == 'mdv' ] ; then
   # Change output format for mock-urpm
   sed '17c/format: %(message)s' $config_dir/logging.ini > ~/logging.ini
   sudo mv -f ~/logging.ini $config_dir/logging.ini
+  if [[ "$platform_name" =~ .*lts$ ]] ; then
+    config_name="$distrib_type-lts-$platform_arch.cfg"
+  fi
 fi
 
 # Init config file
+default_cfg=$rpm_build_script_path/configs/default.cfg
+cp $rpm_build_script_path/configs/$config_name $default_cfg
+media_list=/home/vagrant/container/media.list
+if [ "$distrib_type" == 'mdv' ] ; then
+  echo 'config_opts["urpmi_media"] = {' >> $default_cfg
+  first='1'
+  while read CMD; do
+    name=`echo $CMD | awk '{ print $1 }'`
+    url=`echo $CMD | awk '{ print $2 }'`
+    if [ "$first" == '1' ] ; then
+      echo "\"$name\": \"$url\"" >> $default_cfg
+      first=0
+    else
+      echo ", \"$name\": \"$url\"" >> $default_cfg
+    fi
+  done < $media_list
+  echo '}' >> $default_cfg
+else
+  echo '
+    config_opts["yum.conf"] = """
+      [main]
+      cachedir=/var/cache/yum
+      debuglevel=1
+      reposdir=/dev/null
+      logfile=/var/log/yum.log
+      retries=20
+      obsoletes=1
+      gpgcheck=0
+      assumeyes=1
+      syslog_ident=mock
+      syslog_device=
+
+      # repos
+  ' >> $default_cfg
+  while read CMD; do
+    name=`echo $CMD | awk '{ print $1 }'`
+    url=`echo $CMD | awk '{ print $2 }'`
+    echo "
+      [$name]
+      name=$name
+      enabled=1
+      baseurl=$url
+      failovermethod=priority
+
+    " >> $default_cfg
+  done < $media_list
+  echo '"""' >> $default_cfg
+fi
+
 sudo rm -rf $config_dir/default.cfg
-# default.cfg should be created before running script!!!!
-sudo ln -s $rpm_build_script_path/configs/default.cfg $config_dir/default.cfg
+sudo ln -s $default_cfg $config_dir/default.cfg
 %mock_command --define="packager $uname $email"
 
 
