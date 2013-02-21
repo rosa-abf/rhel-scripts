@@ -166,7 +166,7 @@ r=`head -1 $config_dir/default.cfg |
   sed -e "s/'//g"|
   sed -e "s/ //g"`
 chroot_path=$tmpfs_path/$r/root
-# echo '--> Checking internet connection...'
+echo '--> Checking internet connection...'
 sudo chroot $chroot_path ping -c 1 google.com
 
 # Tests
