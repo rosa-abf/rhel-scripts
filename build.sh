@@ -76,7 +76,7 @@ if [ $x -eq '0' ] ; then
   exit 1
 else
   if [ $x -ne '1' ] ; then
-    echo '--> There are more then one spec files in repository.'
+    echo '--> There are more than one spec file in repository.'
     exit 1
   fi
 fi
@@ -96,7 +96,7 @@ mkdir $rpm_path
 mock_command="mock"
 config_dir=/etc/mock/
 if [ "$distrib_type" == 'mdv' ] ; then
-  echo "Will be use 'mock-urpm'..."
+  echo "'mock-urpm' will be used..."
   mock_command="mock-urpm"
   config_dir=/etc/mock-urpm/
   # Change output format for mock-urpm
@@ -134,14 +134,14 @@ move_logs $src_rpm_path 'src-rpm'
 
 # Check exit code after build
 if [ $rc != 0 ] ; then
-  echo '--> Build failed: mock-urpm problem.'
+  echo '--> Build failed: mock-urpm encountered a problem.'
   exit 1
 fi
 
 # Build rpm
 cd $src_rpm_path
 src_rpm_name=`ls -1 | grep 'src.rpm$'`
-echo '--> Build rpm'
+echo '--> Building rpm...'
 $mock_command $src_rpm_name --resultdir $rpm_path -v --no-cleanup-after --no-clean
 # Save exit code
 rc=$?
@@ -166,8 +166,8 @@ r=`head -1 $config_dir/default.cfg |
   sed -e "s/'//g"|
   sed -e "s/ //g"`
 chroot_path=$tmpfs_path/$r/root
-# echo '--> Checks internet connection...'
-# sudo chroot $chroot_path ping -c 1 google.com
+echo '--> Checking internet connection...'
+sudo chroot $chroot_path ping -c 1 google.com
 
 # Tests
 test_log=$results_path/tests.log
