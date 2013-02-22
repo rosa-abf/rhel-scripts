@@ -130,30 +130,30 @@ if [ "$distrib_type" == 'mdv' ] ; then
   echo '}' >> $default_cfg
 else
   echo '
-    config_opts["yum.conf"] = """
-      [main]
-      cachedir=/var/cache/yum
-      debuglevel=1
-      reposdir=/dev/null
-      logfile=/var/log/yum.log
-      retries=20
-      obsoletes=1
-      gpgcheck=0
-      assumeyes=1
-      syslog_ident=mock
-      syslog_device=
+config_opts["yum.conf"] = """
+  [main]
+  cachedir=/var/cache/yum
+  debuglevel=1
+  reposdir=/dev/null
+  logfile=/var/log/yum.log
+  retries=20
+  obsoletes=1
+  gpgcheck=0
+  assumeyes=1
+  syslog_ident=mock
+  syslog_device=
 
-      # repos
+  # repos
   ' >> $default_cfg
   while read CMD; do
     name=`echo $CMD | awk '{ print $1 }'`
     url=`echo $CMD | awk '{ print $2 }'`
     echo "
-      [$name]
-      name=$name
-      enabled=1
-      baseurl=$url
-      failovermethod=priority
+  [$name]
+  name=$name
+  enabled=1
+  baseurl=$url
+  failovermethod=priority
 
     " >> $default_cfg
   done < $media_list
