@@ -145,12 +145,12 @@ for arch in $arches ; do
     # Save exit code
     rc=$?
   else
-    comps_xml=/home/vagrant/server-comps_xml-master/res6-comps.xml
+    comps_xml=/home/vagrant/comps_xml-master/res6-comps.xml
     if [ ! -f "$comps_xml" ]; then
       cd /home/vagrant
-      curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/server-comps_xml-master.tar.gz
-      tar -xzf server-comps_xml-master.tar.gz
-      rm server-comps_xml-master.tar.gz
+      curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/comps_xml-master.tar.gz
+      tar -xzf comps_xml-master.tar.gz
+      rm comps_xml-master.tar.gz
       cd $script_path/
     fi
 
