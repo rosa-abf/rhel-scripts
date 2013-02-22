@@ -174,11 +174,12 @@ for arch in $arches ; do
 
   if [ "$is_container" == 'true' ] && [ "$platform_type" == 'rhel' ] ; then
     name="container-$id-$arch"
-    echo "[$name]"      >> $repo_file
-    echo "  name=$name" >> $repo_file
-    echo "  enabled=1"  >> $repo_file
-    echo "  baseurl=http://abf.rosalinux.ru/downloads/$platform_name/container/$id/$arch/$rep_name/$status" >> $repo_file
-    echo "  failovermethod=priority" >> $repo_file
+    echo "[$name]"    >> $repo_file
+    echo "name=$name" >> $repo_file
+    echo "enabled=1"  >> $repo_file
+    echo "gpgcheck=0" >> $repo_file
+    echo "baseurl=http://abf.rosalinux.ru/downloads/$platform_name/container/$id/$arch/$rep_name/$status" >> $repo_file
+    echo "failovermethod=priority" >> $repo_file
   fi
 
 done
