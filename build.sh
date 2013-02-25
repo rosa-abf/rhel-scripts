@@ -169,9 +169,9 @@ for arch in $arches ; do
 
   # Check exit code
   if [ $rc != 0 ] ; then
-  if [ "$platform_type" == 'mdv' ] ; then
-  rpm -qa |grep genhdlist2
-  fi  
+    if [ "$platform_type" == 'mdv' ] ; then
+      rpm -qa |grep genhdlist2
+    fi  
     break
   fi
 
