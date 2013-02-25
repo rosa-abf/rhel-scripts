@@ -169,6 +169,7 @@ for arch in $arches ; do
 
   # Check exit code
   if [ $rc != 0 ] ; then
+    rpm -qa |grep genhdlist2
     break
   fi
 
