@@ -198,7 +198,7 @@ src_rpm_name=`ls -1 | grep 'src.rpm$'`
 echo '--> Building rpm...'
 if [ "$distrib_type" == 'mdv' ] ; then
   echo Checking what is inside buildir
-  tree $chroot_path/builddir/build/ >> $results_path/builddir-tree.log
+  tree $chroot_path/builddir/ >> $results_path/builddir-tree.log
 fi
 $mock_command $src_rpm_name --resultdir $rpm_path -v --no-cleanup-after --no-clean
 # Save exit code
