@@ -162,7 +162,7 @@ fi
 
 sudo rm -rf $config_dir/default.cfg
 sudo ln -s $default_cfg $config_dir/default.cfg
-%mock_command --define="packager $uname $email"
+$mock_command --define="packager $uname $email"
 
 
 # Build src.rpm
@@ -257,7 +257,7 @@ fi
 # Umount tmpfs
 cd /
 sudo umount $tmpfs_path
-rm -rf $tmpfs_path 
+rm -rf $tmpfs_path
 
 
 move_logs $rpm_path 'rpm'
