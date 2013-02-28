@@ -199,8 +199,7 @@ echo '--> Building rpm...'
 # Copy rpmlintrc files from git folder to SOURCES for mandriva based builds
 if [ "$distrib_type" == 'mdv' ] ; then
 ## temporary measuse to see what is inside chroot_path
- ls $chroot_path/builddir/
- mkdir -p $chroot_path/builddir/build/SOURCES
+ ls $chroot_path/
  cp $tmpfs_path/SOURCES/*.rpmlintrc $chroot_path/builddir/build/SOURCES
 fi
 $mock_command $src_rpm_name --resultdir $rpm_path -v --no-cleanup-after --no-clean
