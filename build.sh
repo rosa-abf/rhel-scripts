@@ -306,5 +306,5 @@ if [ $test_code != 0 ] ; then
   echo '--> Test failed, see: tests.log'
   exit 5
 fi
-
+echo '--> Build has been done successfully!'
 exit 0
