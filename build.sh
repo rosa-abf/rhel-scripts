@@ -196,6 +196,10 @@ fi
 cd $src_rpm_path
 src_rpm_name=`ls -1 | grep 'src.rpm$'`
 echo '--> Building rpm...'
+# Copy rpmlintrc files from git folder to SOURCES for mandriva based builds
+if [ "$distrib_type" == 'mdv' ] ; then
+ cp $tmpfs_path/SOURCES/*.rpmlintrc $chroot_path/builddir/build/SOURCES
+fi
 $mock_command $src_rpm_name --resultdir $rpm_path -v --no-cleanup-after --no-clean
 # Save exit code
 rc=$?
