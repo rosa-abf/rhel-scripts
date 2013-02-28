@@ -209,7 +209,8 @@ if [ "$distrib_type" == 'mdv' ] ; then
  sed -e "s/'//g"|
  sed -e "s/ //g"`
  chroot_path=$tmpfs_path/$r/root
- ls $chroot_path/
+ ls $chroot_path/builddir/build/SOURCES
+ ls $tmpfs_path/SOURCES/
  cp $tmpfs_path/SOURCES/*.rpmlintrc $chroot_path/builddir/build/SOURCES
 fi
 $mock_command $src_rpm_name --resultdir $rpm_path -v --no-cleanup-after --no-clean
