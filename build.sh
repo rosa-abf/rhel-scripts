@@ -200,7 +200,7 @@ echo '--> Building rpm...'
 if [ "$distrib_type" == 'mdv' ] ; then
 ## temporary measuse to see what is inside chroot_path
 # i want to know exactly what chroot_path is
- echo $chroot_path
+ chroot_path=$tmpfs_path/$r/root
  ls $chroot_path/
  cp $tmpfs_path/SOURCES/*.rpmlintrc $chroot_path/builddir/build/SOURCES
 fi
