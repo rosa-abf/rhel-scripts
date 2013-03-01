@@ -26,6 +26,10 @@ fi
 m_info_folder='repodata'
 if [ "$platform_type" == 'mdv' ] ; then
   m_info_folder='media_info'
+
+  # Update genhdlist2
+  sudo urpmi.update -a
+  sudo urpmi --auto genhdlist2
 fi
 
 for arch in SRPMS i586 x86_64 ; do
