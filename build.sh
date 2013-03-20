@@ -79,6 +79,7 @@ for arch in $arches ; do
   cp -rf $main_folder/$status/$m_info_folder $m_info_backup
 
   # Downloads new packages
+  echo "--> [`LANG=en_US.UTF-8  date -u`] Downloading new packages..."
   new_packages="$container_path/new.$arch.list"
   if [ -f "$new_packages" ]; then
     cd $rpm_new
@@ -108,8 +109,10 @@ for arch in $arches ; do
     done
     update_repo=1
   fi
+  echo "--> [`LANG=en_US.UTF-8  date -u`] Done."
 
   # Creates backup
+  echo "--> [`LANG=en_US.UTF-8  date -u`] Creating backup..."
   old_packages="$container_path/old.$arch.list"
   if [ -f "$old_packages" ]; then
     for fullname in `cat $old_packages` ; do
@@ -121,6 +124,7 @@ for arch in $arches ; do
     done
     update_repo=1
   fi
+  echo "--> [`LANG=en_US.UTF-8  date -u`] Done."
 
   if [ -f "$new_packages" ]; then
     mv $rpm_new/* $main_folder/$status/
@@ -137,6 +141,7 @@ for arch in $arches ; do
   fi
 
   # Build repo
+  echo "--> [`LANG=en_US.UTF-8  date -u`] Generating repository..."
   cd $script_path/
   if [ "$platform_type" == 'mdv' ] ; then
     if [ "$regenerate_metadata" != 'true' ] ; then
@@ -170,6 +175,7 @@ for arch in $arches ; do
     # Save exit code
     rc=$?
   fi
+  echo "--> [`LANG=en_US.UTF-8  date -u`] Done."
 
   # Check exit code
   if [ $rc != 0 ] ; then
