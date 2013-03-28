@@ -196,23 +196,6 @@ fi
 cd $src_rpm_path
 src_rpm_name=`ls -1 | grep 'src.rpm$'`
 echo '--> Building rpm...'
-# Copy rpmlintrc files from git folder to SOURCES for mandriva based builds
-if [ "$distrib_type" == 'mdv' ] ; then
-## temporary measuse to see what is inside chroot_path
-# i want to know exactly what chroot_path is
- r=`head -1 $config_dir/default.cfg |
- sed -e "s/config_opts//g" |
- sed -e "s/\[//g" |
- sed -e "s/\]//g" |
- sed -e "s/root//g" |
- sed -e "s/=//g" |
- sed -e "s/'//g"|
- sed -e "s/ //g"`
- chroot_path=$tmpfs_path/$r/root
- ls $chroot_path/builddir/build/SOURCES
- ls $tmpfs_path/SOURCES/
- cp $tmpfs_path/SOURCES/*.rpmlintrc $chroot_path/builddir/build/SOURCES
-fi
 $mock_command $src_rpm_name --resultdir $rpm_path -v --no-cleanup-after --no-clean
 # Save exit code
 rc=$?
@@ -244,9 +227,9 @@ sudo chroot $chroot_path ping -c 1 google.com
 test_log=$results_path/tests.log
 test_root=$tmpfs_path/test-root
 test_code=0
+rpm -qa --queryformat "%{name}-%{version}-%{release}.%{arch}.%{disttag}%{distepoch}\n" --root $chroot_path >> $results_path/rpm-qa.log
 if [ $rc == 0 ] ; then
   ls -la $rpm_path/ >> $test_log
-  rpm -qa --queryformat "%{name}-%{version}-%{release}.%{arch}.%{disttag}%{distepoch}\n" --root $chroot_path >> $results_path/rpm-qa.log
   if [ "$distrib_type" == 'mdv' ] ; then
     mkdir $test_root
     sudo urpmi -v --debug --no-verify --no-suggests --test $rpm_path/*.rpm --root $test_root --urpmi-root $chroot_path --auto >> $test_log 2>&1
