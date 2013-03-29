@@ -85,7 +85,11 @@ for arch in $arches ; do
     cd $rpm_new
     for sha1 in `cat $new_packages` ; do
       echo "---> [`LANG=en_US.UTF-8  date -u`] extract_filename..."
-      fullname=`sha1=$sha1 /bin/bash $script_path/extract_filename.sh`
+      # fullname=`sha1=$sha1 /bin/bash $script_path/extract_filename.sh`
+      fullname=`curl -sL $file_store_url?hash=$sha1 |
+        grep -Po '"file_name":".*",' |
+        sed -e 's/"file_name":"//g' |
+        sed -e 's/",//g'`
       echo "---> [`LANG=en_US.UTF-8  date -u`] extract_filename - done"
       if [ "$fullname" != '' ] ; then
         echo "---> [`LANG=en_US.UTF-8  date -u`] curl..."
