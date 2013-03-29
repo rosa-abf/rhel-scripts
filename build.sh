@@ -50,6 +50,8 @@ if [ "$platform_type" == 'mdv' ] ; then
   # Update genhdlist2
   sudo urpmi.update -a
   sudo urpmi --auto genhdlist2
+else
+  sudo /bin/bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'
 fi
 
 # Checks that 'repository' directory exist
