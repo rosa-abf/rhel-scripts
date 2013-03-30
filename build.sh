@@ -86,21 +86,16 @@ for arch in $arches ; do
   if [ -f "$new_packages" ]; then
     cd $rpm_new
     for sha1 in `cat $new_packages` ; do
-      echo "---> [`LANG=en_US.UTF-8  date -u`] extract_filename..."
       # fullname=`sha1=$sha1 /bin/bash $script_path/extract_filename.sh`
       fullname=`curl -sL $file_store_url?hash=$sha1 |
         grep -Po '"file_name":".*",' |
         sed -e 's/"file_name":"//g' |
         sed -e 's/",//g'`
-      echo "---> [`LANG=en_US.UTF-8  date -u`] extract_filename - done"
       if [ "$fullname" != '' ] ; then
-        echo "---> [`LANG=en_US.UTF-8  date -u`] curl..."
         curl -O -L "$file_store_url/$sha1"
-        echo "---> [`LANG=en_US.UTF-8  date -u`] curl - done"
         mv $sha1 $fullname
         echo $fullname >> "$new_packages.downloaded"
         chown root:root $fullname
-        echo "---> [`LANG=en_US.UTF-8  date -u`] mv && chown - done"
         # Add signature to RPM
         if [ $sign_rpm != 0 ] ; then
           chmod 0666 $fullname
@@ -114,7 +109,6 @@ for arch in $arches ; do
           fi
         fi
         chmod 0644 $rpm_new/$fullname
-        echo "---> [`LANG=en_US.UTF-8  date -u`] last chown - done"
       else
         echo "--> Package with sha1 '$sha1' does not exist!!!"
       fi
