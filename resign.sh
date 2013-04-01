@@ -1,10 +1,9 @@
 #!/bin/sh
 
-echo '--> publish-build-list-script: resign.sh'
+echo '--> publish-script-rhel: resign.sh'
 
 usermod -a -G vboxsf vagrant
 
-platform_type="$TYPE"
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
 

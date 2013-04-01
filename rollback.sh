@@ -1,15 +1,13 @@
 #!/bin/sh
 
-echo '--> publish-build-list-script: rollback.sh'
+echo '--> publish-script: rollback.sh'
 
 usermod -a -G vboxsf vagrant
 
-platform_type="$TYPE"
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
 use_file_store="$USE_FILE_STORE"
 
-echo "TYPE = $platform_type"
 echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
 
@@ -23,28 +21,19 @@ if [ "$released" == 'true' ] ; then
   status='updates'
 fi
 
-m_info_folder='repodata'
-if [ "$platform_type" == 'mdv' ] ; then
-  m_info_folder='media_info'
-
-  # Update genhdlist2
-  sudo urpmi.update -a
-  sudo urpmi --auto genhdlist2
-fi
-
 for arch in SRPMS i586 x86_64 ; do
   main_folder=$repository_path/$arch/$rep_name
   rpm_backup="$main_folder/$status-rpm-backup"
-  m_info_backup="$main_folder/$status-$m_info_folder-backup"
+  repodata_backup="$main_folder/$status-repodata-backup"
 
   if [ -d "$rpm_backup" ] && [ "$(ls -A $rpm_backup)" ]; then
     mv $rpm_backup/* $main_folder/$status/
   fi
 
-  if [ -d "$m_info_backup" ] && [ "$(ls -A $m_info_backup)" ]; then
-    rm -rf $main_folder/$status/$m_info_folder
-    cp -rf $m_info_backup $main_folder/$status/$m_info_folder
-    rm -rf $m_info_backup
+  if [ -d "$repodata_backup" ] && [ "$(ls -A $repodata_backup)" ]; then
+    rm -rf $main_folder/$status/repodata
+    cp -rf $repodata_backup $main_folder/$status/repodata
+    rm -rf $repodata_backup
   fi
 
   # Remove new packages
@@ -68,7 +57,7 @@ for arch in SRPMS i586 x86_64 ; do
     fi 
   fi
 
-  rm -rf $rpm_backup $m_info_backup
+  rm -rf $rpm_backup $repodata_backup
 done
 
 exit 0

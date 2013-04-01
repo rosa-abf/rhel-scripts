@@ -1,10 +1,9 @@
 #!/bin/sh
 
-echo '--> publish-build-list-script: build.sh'
+echo '--> publish-script-rhel: build.sh'
 
 usermod -a -G vboxsf vagrant
 
-platform_type="$TYPE"
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
 is_container="$IS_CONTAINER"
@@ -12,7 +11,6 @@ id="$ID"
 platform_name="$PLATFORM_NAME"
 regenerate_metadata="$REGENERATE_METADATA"
 
-echo "TYPE = $platform_type"
 echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
 
@@ -38,24 +36,15 @@ if [ "$released" == 'true' ] ; then
 fi
 
 repo_file="$platform_path/$id.repo"
-if [ "$is_container" == 'true' ] && [ "$platform_type" == 'rhel' ] ; then
+if [ "$is_container" == 'true' ] ; then
   rm -f $repo_file
 fi
 
 # Defines "media_info"/"repodata" folder
-m_info_folder='repodata'
-if [ "$platform_type" == 'mdv' ] ; then
-  m_info_folder='media_info'
-
-  # Update genhdlist2
-  sudo urpmi.update -a
-  sudo urpmi --auto genhdlist2
-else
-  sudo /bin/bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'
-fi
+sudo /bin/bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'
 
 # Checks that 'repository' directory exist
-mkdir -p $repository_path/{SRPMS,i586,x86_64}/$rep_name/$status/$m_info_folder
+mkdir -p $repository_path/{SRPMS,i586,x86_64}/$rep_name/$status/repodata
 
 sign_rpm=0
 gnupg_path=/home/vagrant/.gnupg
@@ -75,10 +64,10 @@ for arch in $arches ; do
   main_folder=$repository_path/$arch/$rep_name
   rpm_backup="$main_folder/$status-rpm-backup"
   rpm_new="$main_folder/$status-rpm-new"
-  m_info_backup="$main_folder/$status-$m_info_folder-backup"
-  rm -rf $rpm_backup $rpm_new $m_info_backup
+  repodata_backup="$main_folder/$status-repodata-backup"
+  rm -rf $rpm_backup $rpm_new $repodata_backup
   mkdir {$rpm_backup,$rpm_new}
-  cp -rf $main_folder/$status/$m_info_folder $m_info_backup
+  cp -rf $main_folder/$status/repodata $repodata_backup
 
   # Downloads new packages
   echo "--> [`LANG=en_US.UTF-8  date -u`] Downloading new packages..."
@@ -86,11 +75,7 @@ for arch in $arches ; do
   if [ -f "$new_packages" ]; then
     cd $rpm_new
     for sha1 in `cat $new_packages` ; do
-      # fullname=`sha1=$sha1 /bin/bash $script_path/extract_filename.sh`
-      fullname=`curl -sL $file_store_url?hash=$sha1 |
-        grep -Po '"file_name":".*",' |
-        sed -e 's/"file_name":"//g' |
-        sed -e 's/",//g'`
+      fullname=`sha1=$sha1 /bin/bash $script_path/extract_filename.sh`
       if [ "$fullname" != '' ] ; then
         curl -O -L "$file_store_url/$sha1"
         mv $sha1 $fullname
@@ -149,49 +134,34 @@ for arch in $arches ; do
   # Build repo
   echo "--> [`LANG=en_US.UTF-8  date -u`] Generating repository..."
   cd $script_path/
-  if [ "$platform_type" == 'mdv' ] ; then
-    if [ "$regenerate_metadata" != 'true' ] ; then
-      echo "/usr/bin/genhdlist2 -v --nolock --allow-empty-media --xml-info $main_folder/$status"
-      /usr/bin/genhdlist2 -v --nolock --allow-empty-media --xml-info "$main_folder/$status"
-    else
-      echo "/usr/bin/genhdlist2 -v --clean --nolock --allow-empty-media --xml-info $main_folder/$status"
-      /usr/bin/genhdlist2 -v --clean --nolock --allow-empty-media --xml-info "$main_folder/$status"
-    fi
-    # Save exit code
-    rc=$?
-  else
-    comps_xml=/home/vagrant/comps_xml-master/res6-comps.xml
-    if [ ! -f "$comps_xml" ]; then
-      cd /home/vagrant
-      curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/comps_xml-master.tar.gz
-      tar -xzf comps_xml-master.tar.gz
-      rm comps_xml-master.tar.gz
-      cd $script_path/
-    fi
-
-    rm -rf .olddata $main_folder/$status/.olddata
-
-    if [ "$regenerate_metadata" != 'true' ] ; then
-      echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
-      createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
-    else
-      echo "createrepo -v -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
-      createrepo -v -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
-    fi
-    # Save exit code
-    rc=$?
+  comps_xml=/home/vagrant/comps_xml-master/res6-comps.xml
+  if [ ! -f "$comps_xml" ]; then
+    cd /home/vagrant
+    curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/comps_xml-master.tar.gz
+    tar -xzf comps_xml-master.tar.gz
+    rm comps_xml-master.tar.gz
+    cd $script_path/
   fi
+
+  rm -rf .olddata $main_folder/$status/.olddata
+
+  if [ "$regenerate_metadata" != 'true' ] ; then
+    echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
+    createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
+  else
+    echo "createrepo -v -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
+    createrepo -v -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
+  fi
+  # Save exit code
+  rc=$?
   echo "--> [`LANG=en_US.UTF-8  date -u`] Done."
 
   # Check exit code
   if [ $rc != 0 ] ; then
-    if [ "$platform_type" == 'mdv' ] ; then
-      rpm -qa |grep genhdlist2
-    fi  
     break
   fi
 
-  if [ "$is_container" == 'true' ] && [ "$platform_type" == 'rhel' ] ; then
+  if [ "$is_container" == 'true' ] ; then
     name="container-$id-$arch"
     echo "[$name]"    >> $repo_file
     echo "name=$name" >> $repo_file
@@ -205,14 +175,14 @@ done
 
 # Check exit code after build and rollback
 if [ $rc != 0 ] ; then
-  TYPE=$platform_type RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
+  RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
 else
   for arch in SRPMS i586 x86_64 ; do
     main_folder=$repository_path/$arch/$rep_name
     rpm_backup="$main_folder/$status-rpm-backup"
     rpm_new="$main_folder/$status-rpm-new"
-    m_info_backup="$main_folder/$status-$m_info_folder-backup"
-    rm -rf $rpm_backup $rpm_new $m_info_backup
+    repodata_backup="$main_folder/$status-repodata-backup"
+    rm -rf $rpm_backup $rpm_new $repodata_backup
   done
 fi
 

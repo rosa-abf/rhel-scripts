@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo '--> publish-build-list-script: init_rpmmacros.sh'
+echo '--> publish-script-rhel: init_rpmmacros.sh'
 
 gnupg_path=/home/vagrant/.gnupg
 
