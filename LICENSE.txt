@@ -1,0 +1,7 @@
+ROSA ABF is Copyright 2010-2013 ROSA CJSC.
+
+ROSA CJSC ("ROSA") distributes the ABF source code under the GNU General Public License (GPL), version 2.0 or later.
+
+Third-party copyright in this distribution is noted where applicable.
+
+All rights not expressly granted are reserved.
