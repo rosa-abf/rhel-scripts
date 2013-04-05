@@ -1,6 +1,0 @@
-=== Shell script for building RPM packages on ABF.
-See: https://abf.rosalinux.ru/abf/rpm-build-script
-
-# default.cfg should be created before running script!!!!
-
-"rhel" and "mdv" repositories should be connected separately
