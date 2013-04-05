@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo '--> publish-script: rollback.sh'
+echo '--> rhel-scripts/publish-packages: rollback.sh'
 
 usermod -a -G vboxsf vagrant
 

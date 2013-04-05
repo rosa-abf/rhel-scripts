@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo '--> publish-script-rhel: build.sh'
+echo '--> rhel-scripts/publish-packages: build.sh'
 
 usermod -a -G vboxsf vagrant
 
@@ -15,8 +15,8 @@ echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
 
 # Current path:
-# - /home/vagrant/publish-build-list-script
-script_path=/home/vagrant/publish-build-list-script
+# - /home/vagrant/scripts/publish-packages
+script_path=`pwd`
 
 # Container path:
 # - /home/vagrant/container

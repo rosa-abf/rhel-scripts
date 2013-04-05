@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo 'rpm-build-script: rhel.sh'
+echo '--> rhel-scripts/build-packages: build.sh'
 
 # rhel example:
 # git_project_address="https://abf.rosalinux.ru/server/gnome-settings-daemon.git"
