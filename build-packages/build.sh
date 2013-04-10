@@ -35,6 +35,7 @@ sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
 git config --global core.compression -1
 git clone $git_project_address $project_path
 cd $project_path
+git submodule init && git submodule update
 git remote rm origin
 git checkout $commit_hash
 
