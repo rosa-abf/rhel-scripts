@@ -86,6 +86,7 @@ default_cfg=$rpm_build_script_path/configs/default.cfg
 cp $rpm_build_script_path/configs/$config_name $default_cfg
 media_list=/home/vagrant/container/media.list
 
+echo "config_opts['macros']['%packager'] = '$uname <$email>'" >> $default_cfg
 echo '
 config_opts["yum.conf"] = """
 [main]
@@ -118,8 +119,6 @@ echo '"""' >> $default_cfg
 
 sudo rm -rf $config_dir/default.cfg
 sudo ln -s $default_cfg $config_dir/default.cfg
-mock --define="packager $uname $email"
-
 
 # Build src.rpm
 echo '--> Build src.rpm'
