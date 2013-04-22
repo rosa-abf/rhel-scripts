@@ -25,12 +25,12 @@ for arch in SRPMS i586 x86_64 ; do
   repodata_backup="$main_folder/$status-repodata-backup"
 
   if [ -d "$rpm_backup" ] && [ "$(ls -A $rpm_backup)" ]; then
-    mv $rpm_backup/* $main_folder/$status/
+    sudo mv $rpm_backup/* $main_folder/$status/
   fi
 
   if [ -d "$repodata_backup" ] && [ "$(ls -A $repodata_backup)" ]; then
-    rm -rf $main_folder/$status/repodata
-    cp -rf $repodata_backup $main_folder/$status/repodata
+    sudo rm -rf $main_folder/$status/repodata
+    sudo cp -rf $repodata_backup $main_folder/$status/repodata
     rm -rf $repodata_backup
   fi
 
@@ -41,7 +41,7 @@ for arch in SRPMS i586 x86_64 ; do
       for sha1 in `cat $new_packages` ; do
         fullname=`sha1=$sha1 /bin/bash $script_path/extract_filename.sh`
         if [ "$fullname" != '' ] ; then
-          rm -f $main_folder/$status/$fullname
+          sudo rm -f $main_folder/$status/$fullname
         fi
       done
     fi
@@ -49,7 +49,7 @@ for arch in SRPMS i586 x86_64 ; do
     new_packages="$container_path/new.$arch.list.downloaded"
     if [ -f "$new_packages" ]; then
       for fullname in `cat $new_packages` ; do
-        rm -f $main_folder/$status/$fullname
+        sudo rm -f $main_folder/$status/$fullname
       done
       rm -rf $new_packages
     fi 

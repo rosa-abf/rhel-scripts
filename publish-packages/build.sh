@@ -104,7 +104,7 @@ for arch in $arches ; do
       package=$main_folder/$status/$fullname
       if [ -f "$package" ]; then
         echo "mv $package $rpm_backup/"
-        mv $package $rpm_backup/
+        sudo mv $package $rpm_backup/
       fi
     done
     update_repo=1
@@ -112,13 +112,13 @@ for arch in $arches ; do
   echo "--> [`LANG=en_US.UTF-8  date -u`] Done."
 
   if [ -f "$new_packages" ]; then
-    mv $rpm_new/* $main_folder/$status/
+    sudo mv $rpm_new/* $main_folder/$status/
   fi
   rm -rf $rpm_new
 
   if [ $update_repo != 1 ] ; then
     if [ "$is_container" == 'true' ] ; then
-      rm -rf $repository_path/$arch
+      sudo rm -rf $repository_path/$arch
     fi
     if [ "$regenerate_metadata" != 'true' ] ; then
       continue
@@ -139,13 +139,12 @@ for arch in $arches ; do
 
   rm -rf .olddata $main_folder/$status/.olddata
 
-  chown -R root:root $main_folder/$status
   if [ "$regenerate_metadata" != 'true' ] ; then
     echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
-    createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
+    sudo createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
   else
     echo "createrepo -v -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
-    createrepo -v -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
+    sudo createrepo -v -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
   fi
   # Save exit code
   rc=$?
