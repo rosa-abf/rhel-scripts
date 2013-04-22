@@ -2,8 +2,6 @@
 
 echo '--> rhel-scripts/publish-packages: build.sh'
 
-usermod -a -G vboxsf vagrant
-
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
 is_container="$IS_CONTAINER"
@@ -39,9 +37,6 @@ repo_file="$platform_path/$id.repo"
 if [ "$is_container" == 'true' ] ; then
   rm -f $repo_file
 fi
-
-# Defines "media_info"/"repodata" folder
-sudo /bin/bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'
 
 # Checks that 'repository' directory exist
 mkdir -p $repository_path/{SRPMS,i586,x86_64}/$rep_name/$status/repodata

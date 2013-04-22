@@ -2,8 +2,6 @@
 
 echo '--> rhel-scripts/publish-packages: rollback.sh'
 
-usermod -a -G vboxsf vagrant
-
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
 use_file_store="$USE_FILE_STORE"
