@@ -87,7 +87,7 @@ for arch in $arches ; do
             echo "--> Package '$fullname' has not been signed successfully!!!"
           fi
         fi
-        chmod 0644 $rpm_new/$fullname
+        # chmod 0644 $rpm_new/$fullname
       else
         echo "--> Package with sha1 '$sha1' does not exist!!!"
       fi
@@ -96,6 +96,8 @@ for arch in $arches ; do
   fi
   echo "--> [`LANG=en_US.UTF-8  date -u`] Done."
 
+  sudo chmod 666 -R $main_folder/$status
+  sudo chmod +X -R $main_folder/$status
   # Creates backup
   echo "--> [`LANG=en_US.UTF-8  date -u`] Creating backup..."
   old_packages="$container_path/old.$arch.list"

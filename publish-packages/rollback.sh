@@ -24,6 +24,8 @@ for arch in SRPMS i586 x86_64 ; do
   rpm_backup="$main_folder/$status-rpm-backup"
   repodata_backup="$main_folder/$status-repodata-backup"
 
+  sudo chmod 666 -R $main_folder/$status
+  sudo chmod +X -R $main_folder/$status
   if [ -d "$rpm_backup" ] && [ "$(ls -A $rpm_backup)" ]; then
     sudo mv $rpm_backup/* $main_folder/$status/
   fi
