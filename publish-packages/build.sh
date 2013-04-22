@@ -75,7 +75,6 @@ for arch in $arches ; do
         curl -O -L "$file_store_url/$sha1"
         mv $sha1 $fullname
         echo $fullname >> "$new_packages.downloaded"
-        chown root:root $fullname
         # Add signature to RPM
         if [ $sign_rpm != 0 ] ; then
           chmod 0666 $fullname
@@ -140,6 +139,7 @@ for arch in $arches ; do
 
   rm -rf .olddata $main_folder/$status/.olddata
 
+  chown -R root:root $main_folder/$status
   if [ "$regenerate_metadata" != 'true' ] ; then
     echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
     createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
@@ -171,7 +171,7 @@ done
 # Check exit code after build and rollback
 if [ $rc != 0 ] ; then
   cd $script_path/
-  RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
+  RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false sudo /bin/bash $script_path/rollback.sh
 else
   for arch in SRPMS i586 x86_64 ; do
     main_folder=$repository_path/$arch/$rep_name
