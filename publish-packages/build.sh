@@ -107,6 +107,7 @@ for arch in $arches ; do
         curl -O -L "$file_store_url/$sha1"
         mv $sha1 $fullname
         echo $fullname >> "$new_packages.downloaded"
+        chown root:root $fullname
         # Add signature to RPM
         if [ $sign_rpm != 0 ] ; then
           chmod 0666 $fullname
@@ -190,7 +191,7 @@ done
 # Check exit code after build and rollback
 if [ $rc != 0 ] ; then
   cd $script_path/
-  sudo RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
+  RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
 else
   for arch in SRPMS i586 x86_64 ; do
     main_folder=$repository_path/$arch/$rep_name
