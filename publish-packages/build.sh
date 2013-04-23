@@ -78,6 +78,7 @@ function build_repo {
   fi
   # Save exit code
   echo $? > "$container_path/$arch.exit-code"
+  cd ~
   rm -rf $tmp_dir
   echo "--> [`LANG=en_US.UTF-8  date -u`] Done."
 }
