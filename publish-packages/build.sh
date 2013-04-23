@@ -64,7 +64,7 @@ function build_repo {
   arch=$2
   regenerate=$3
   # Build repo
-  tmp_dir="~/tmp-$arch"
+  tmp_dir="/home/vagrant/tmp-$arch"
   rm -rf $tmp_dir $path/.olddata
   mkdir $tmp_dir
   cd $tmp_dir/
