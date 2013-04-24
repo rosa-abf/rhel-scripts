@@ -2,8 +2,6 @@
 
 echo '--> rhel-scripts/publish-packages: build.sh'
 
-usermod -a -G vboxsf vagrant
-
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
 is_container="$IS_CONTAINER"
@@ -40,9 +38,6 @@ if [ "$is_container" == 'true' ] ; then
   rm -f $repo_file
 fi
 
-# Defines "media_info"/"repodata" folder
-sudo /bin/bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'
-
 # Checks that 'repository' directory exist
 mkdir -p $repository_path/{SRPMS,i586,x86_64}/$rep_name/$status/repodata
 
@@ -55,6 +50,38 @@ else
   /bin/bash $script_path/init_rpmmacros.sh
 fi
 
+
+comps_xml=/home/vagrant/comps_xml-master/res6-comps.xml
+if [ ! -f "$comps_xml" ]; then
+  cd /home/vagrant
+  curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/comps_xml-master.tar.gz
+  tar -xzf comps_xml-master.tar.gz
+  rm comps_xml-master.tar.gz
+fi
+
+function build_repo {
+  path=$1
+  arch=$2
+  regenerate=$3
+  # Build repo
+  tmp_dir="/home/vagrant/tmp-$arch"
+  rm -rf $tmp_dir $path/.olddata
+  mkdir $tmp_dir
+  cd $tmp_dir
+  echo "--> [`LANG=en_US.UTF-8  date -u`] Generating repository..."
+  if [ "$regenerate" != 'true' ] ; then
+    echo "createrepo -v --update -d -g $comps_xml -o $path $path"
+    createrepo -v --update -d -g "$comps_xml" -o "$path" "$path"
+  else
+    echo "createrepo -v -d -g $comps_xml -o $path $path"
+    createrepo -v -d -g "$comps_xml" -o "$path" "$path"
+  fi
+  # Save exit code
+  echo $? > "$container_path/$arch.exit-code"
+  cd ~
+  rm -rf $tmp_dir
+  echo "--> [`LANG=en_US.UTF-8  date -u`] Done."
+}
 
 rx=0
 arches="SRPMS i586 x86_64"
@@ -131,35 +158,7 @@ for arch in $arches ; do
     fi
   fi
 
-  # Build repo
-  echo "--> [`LANG=en_US.UTF-8  date -u`] Generating repository..."
-  cd $script_path/
-  comps_xml=/home/vagrant/comps_xml-master/res6-comps.xml
-  if [ ! -f "$comps_xml" ]; then
-    cd /home/vagrant
-    curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/comps_xml-master.tar.gz
-    tar -xzf comps_xml-master.tar.gz
-    rm comps_xml-master.tar.gz
-    cd $script_path/
-  fi
-
-  rm -rf .olddata $main_folder/$status/.olddata
-
-  if [ "$regenerate_metadata" != 'true' ] ; then
-    echo "createrepo -v --update -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
-    createrepo -v --update -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
-  else
-    echo "createrepo -v -d -g $comps_xml -o $main_folder/$status $main_folder/$status"
-    createrepo -v -d -g "$comps_xml" -o "$main_folder/$status" "$main_folder/$status"
-  fi
-  # Save exit code
-  rc=$?
-  echo "--> [`LANG=en_US.UTF-8  date -u`] Done."
-
-  # Check exit code
-  if [ $rc != 0 ] ; then
-    break
-  fi
+  build_repo "$main_folder/$status" "$arch" "$regenerate_metadata" &
 
   if [ "$is_container" == 'true' ] ; then
     name="container-$id-$arch"
@@ -171,6 +170,22 @@ for arch in $arches ; do
     echo "failovermethod=priority" >> $repo_file
   fi
 
+done
+
+# Waiting for createrepo...
+wait
+
+rc=0
+# Check exit codes
+for arch in SRPMS i586 x86_64 ; do
+  path="$container_path/$arch.exit-code"
+  if [ -f "$path" ] ; then
+    rc=`cat $path`
+    if [ $rc != 0 ] ; then
+      rpm -qa | grep genhdlist2
+      break
+    fi
+  fi
 done
 
 # Check exit code after build and rollback
