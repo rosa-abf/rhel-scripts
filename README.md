@@ -1,8 +1,5 @@
----
-title: RosaLab ABF Package build environment
----
-
-# RosaLab ABF Package build environment
+RosaLab ABF Package build environment
+=====================================
 
 **Scripts for building packages, processing repositories and etc. on RHEL**
 
