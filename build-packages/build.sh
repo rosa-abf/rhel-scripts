@@ -120,6 +120,9 @@ echo '"""' >> $default_cfg
 sudo rm -rf $config_dir/default.cfg
 sudo ln -s $default_cfg $config_dir/default.cfg
 
+echo "--> Mock configs $config_dir/default.cfg"
+cat $config_dir/default.cfg
+
 # Build src.rpm
 echo '--> Build src.rpm'
 mock --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir -v --no-cleanup-after
