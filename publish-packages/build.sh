@@ -6,11 +6,16 @@ released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
 is_container="$IS_CONTAINER"
 id="$ID"
-platform_name="$PLATFORM_NAME"
+# save_to_platform - main or personal platform
+save_to_platform="$SAVE_TO_PLATFORM"
+# build_for_platform - only main platform
+build_for_platform="$BUILD_FOR_PLATFORM"
 regenerate_metadata="$REGENERATE_METADATA"
 
 echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
+echo "SAVE_TO_PLATFORM = $save_to_platform"
+echo "BUILD_FOR_PLATFORM = $build_for_platform"
 
 # Current path:
 # - /home/vagrant/scripts/publish-packages
@@ -51,12 +56,12 @@ else
 fi
 
 
-comps_xml=/home/vagrant/comps_xml-master/res6-comps.xml
+comps_xml=/home/vagrant/comps_xml-$build_for_platform/comps.xml
 if [ ! -f "$comps_xml" ]; then
   cd /home/vagrant
-  curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/comps_xml-master.tar.gz
-  tar -xzf comps_xml-master.tar.gz
-  rm comps_xml-master.tar.gz
+  curl -L -O https://abf.rosalinux.ru/server/comps_xml/archive/comps_xml-$build_for_platform.tar.gz
+  tar -xzf comps_xml-$build_for_platform.tar.gz
+  rm comps_xml-$build_for_platform.tar.gz
 fi
 
 function build_repo {
@@ -166,7 +171,7 @@ for arch in $arches ; do
     echo "name=$name" >> $repo_file
     echo "enabled=1"  >> $repo_file
     echo "gpgcheck=0" >> $repo_file
-    echo "baseurl=http://abf.rosalinux.ru/downloads/$platform_name/container/$id/$arch/$rep_name/$status" >> $repo_file
+    echo "baseurl=http://abf.rosalinux.ru/downloads/$save_to_platform/container/$id/$arch/$rep_name/$status" >> $repo_file
     echo "failovermethod=priority" >> $repo_file
   fi
 
