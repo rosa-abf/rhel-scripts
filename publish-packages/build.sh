@@ -76,7 +76,11 @@ function build_repo {
   echo "--> [`LANG=en_US.UTF-8  date -u`] Generating repository..."
   if [ "$regenerate" != 'true' ] ; then
     echo "createrepo -v --update -d -g $comps_xml -o $path $path"
-    createrepo -v --update -d -g "$comps_xml" -o "$path" "$path"
+    if [ "$build_for_platform" == 'fedora18' ] ; then
+      createrepo -v --update -d -g "$comps_xml" -o "$path" "$path" &> /home/vagrant/createrepo-$arch
+    else
+      createrepo -v --update -d -g "$comps_xml" -o "$path" "$path"
+    fi
   else
     echo "createrepo -v -d -g $comps_xml -o $path $path"
     createrepo -v -d -g "$comps_xml" -o "$path" "$path"
