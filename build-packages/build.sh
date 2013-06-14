@@ -28,7 +28,7 @@ rm -rf $archives_path $results_path $tmpfs_path $project_path
 mkdir  $archives_path $results_path $tmpfs_path $project_path
 
 # Mount tmpfs
-# 'mock' of fedora18 does not supported tmpfs
+# 'mock' of fedora18 does not support tmpfs
 if [ $platform_name -ne 'fedora18' ] ; then
   sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
 fi
@@ -206,7 +206,7 @@ fi
 
 # Umount tmpfs
 cd /
-# 'mock' of fedora18 does not supported tmpfs
+# 'mock' of fedora18 does not support tmpfs
 if [ $platform_name -ne 'fedora18' ] ; then
   sudo umount $tmpfs_path
 fi
