@@ -28,7 +28,10 @@ rm -rf $archives_path $results_path $tmpfs_path $project_path
 mkdir  $archives_path $results_path $tmpfs_path $project_path
 
 # Mount tmpfs
-sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
+# 'mock' of fedora18 does not support tmpfs
+if [ $platform_name -ne 'fedora18' ] ; then
+  sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
+fi
 
 # Download project
 # Fix for: 'fatal: index-pack failed'
@@ -87,6 +90,10 @@ cp $rpm_build_script_path/configs/$config_name $default_cfg
 media_list=/home/vagrant/container/media.list
 
 echo "config_opts['macros']['%packager'] = '$uname <$email>'" >> $default_cfg
+# 'mock' of fedora18 does not support tmpfs
+if [ $platform_name -eq 'fedora18' ] ; then
+  echo "config_opts['plugin_conf']['tmpfs_enable'] = False" >> $default_cfg
+fi
 echo '
 config_opts["yum.conf"] = """
 [main]
@@ -203,7 +210,10 @@ fi
 
 # Umount tmpfs
 cd /
-sudo umount $tmpfs_path
+# 'mock' of fedora18 does not support tmpfs
+if [ $platform_name -ne 'fedora18' ] ; then
+  sudo umount $tmpfs_path
+fi
 rm -rf $tmpfs_path
 
 
