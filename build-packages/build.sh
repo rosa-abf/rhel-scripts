@@ -24,12 +24,12 @@ tmpfs_path="/home/vagrant/tmpfs"
 project_path="$tmpfs_path/project"
 rpm_build_script_path=`pwd`
 
-rm -rf $archives_path $results_path $tmpfs_path $project_path
+sudo rm -rf $archives_path $results_path $tmpfs_path $project_path
 mkdir  $archives_path $results_path $tmpfs_path $project_path
 
 # Mount tmpfs
 # 'mock' of fedora18 does not support tmpfs
-if [ $platform_name -ne 'fedora18' ] ; then
+if [ "$platform_name" != 'fedora18' ] ; then
   sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
 fi
 
@@ -91,7 +91,7 @@ media_list=/home/vagrant/container/media.list
 
 echo "config_opts['macros']['%packager'] = '$uname <$email>'" >> $default_cfg
 # 'mock' of fedora18 does not support tmpfs
-if [ $platform_name -eq 'fedora18' ] ; then
+if [ "$platform_name" == 'fedora18' ] ; then
   echo "config_opts['plugin_conf']['tmpfs_enable'] = False" >> $default_cfg
 fi
 echo '
@@ -211,10 +211,10 @@ fi
 # Umount tmpfs
 cd /
 # 'mock' of fedora18 does not support tmpfs
-if [ $platform_name -ne 'fedora18' ] ; then
+if [ "$platform_name" != 'fedora18' ] ; then
   sudo umount $tmpfs_path
 fi
-rm -rf $tmpfs_path
+sudo rm -rf $tmpfs_path
 
 
 move_logs $rpm_path 'rpm'
