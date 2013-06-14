@@ -28,7 +28,10 @@ rm -rf $archives_path $results_path $tmpfs_path $project_path
 mkdir  $archives_path $results_path $tmpfs_path $project_path
 
 # Mount tmpfs
-sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
+# 'mock' of fedora18 does not supported tmpfs
+if [ $platform_name -ne 'fedora18' ] ; then
+  sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
+fi
 
 # Download project
 # Fix for: 'fatal: index-pack failed'
@@ -203,7 +206,10 @@ fi
 
 # Umount tmpfs
 cd /
-sudo umount $tmpfs_path
+# 'mock' of fedora18 does not supported tmpfs
+if [ $platform_name -ne 'fedora18' ] ; then
+  sudo umount $tmpfs_path
+fi
 rm -rf $tmpfs_path
 
 
