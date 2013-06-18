@@ -95,7 +95,6 @@ if [ "$platform_name" == 'fedora18' ] ; then
   echo "config_opts['plugin_conf']['tmpfs_enable'] = False" >> $default_cfg
   # TODO: remove when "base" repository will be rebuilt
   echo "fedora18_everything_release http://abf-downloads.rosalinux.ru/fedora18/repository/$platform_arch/everything/release" >> $media_list
-  echo "fedora18_fedora_release http://abf-downloads.rosalinux.ru/fedora18/repository/$platform_arch/fedora/release" >> $media_list
 fi
 echo '
 config_opts["yum.conf"] = """
