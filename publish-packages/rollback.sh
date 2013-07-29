@@ -19,7 +19,8 @@ if [ "$released" == 'true' ] ; then
   status='updates'
 fi
 
-for arch in SRPMS i586 x86_64 ; do
+arches="SRPMS i586 x86_64"
+for arch in $arches ; do
   main_folder=$repository_path/$arch/$rep_name
   rpm_backup="$main_folder/$status-rpm-backup"
   repodata_backup="$main_folder/$status-repodata-backup"
@@ -56,6 +57,11 @@ for arch in SRPMS i586 x86_64 ; do
   fi
 
   rm -rf $rpm_backup $repodata_backup
+done
+
+# Unlocks repository for sync
+for arch in $arches ; do
+  rm -f $repository_path/$arch/$rep_name/.publish.lock
 done
 
 exit 0
