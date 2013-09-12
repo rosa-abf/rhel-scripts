@@ -234,6 +234,7 @@ for rpm in $rpm_path/*.rpm $src_rpm_path/*.src.rpm ; do
   name=`rpm -qp --queryformat %{NAME} $rpm`
   if [ "$name" != '' ] ; then
     fullname=`basename $rpm`
+    epoch=`rpm -qp --queryformat %{EPOCH} $rpm`
     version=`rpm -qp --queryformat %{VERSION} $rpm`
     release=`rpm -qp --queryformat %{RELEASE} $rpm`
     sha1=`sha1sum $rpm | awk '{ print $1 }'`
@@ -242,6 +243,7 @@ for rpm in $rpm_path/*.rpm $src_rpm_path/*.src.rpm ; do
     echo "\"fullname\":\"$fullname\","  >> $c_data
     echo "\"sha1\":\"$sha1\","          >> $c_data
     echo "\"name\":\"$name\","          >> $c_data
+    echo "\"epoch\":\"$epoch\","        >> $c_data
     echo "\"version\":\"$version\","    >> $c_data
     echo "\"release\":\"$release\""     >> $c_data
     echo '},' >> $c_data
