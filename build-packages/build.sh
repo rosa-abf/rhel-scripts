@@ -236,7 +236,6 @@ for rpm in $rpm_path/*.rpm $src_rpm_path/*.src.rpm ; do
     fullname=`basename $rpm`
     epoch=`rpm -qp --queryformat %{EPOCH} $rpm`
     version=`rpm -qp --queryformat %{VERSION} $rpm`
-    version=`rpm -qp --queryformat %{VERSION} $rpm`
     release=`rpm -qp --queryformat %{RELEASE} $rpm`
     sha1=`sha1sum $rpm | awk '{ print $1 }'`
 
