@@ -97,6 +97,19 @@ if [ "$platform_name" == 'fedora18' ] ; then
   echo "fedora18_everything_release http://abf-downloads.rosalinux.ru/fedora18/repository/$platform_arch/everything/release" >> $media_list
 fi
 if [ "$platform_name" == 'rosa-sx-chrome-1.0' ] ; then
+# Disable build time checks
+cat <<"EOF">> $default_cfg
+config_opts['macros']['%check'] = """\\\n%%check\\\nexit 0"""
+config_opts['macros']['%runselftest'] = 0
+EOF
+# Disable Internet access
+cat <<"EOF">> $default_cfg
+config_opts['use_host_resolv'] = False
+EOF
+# Patch configure
+cat <<"EOF">> $default_cfg
+config_opts['macros']['%_configure'] = """sed -i configure -e '/test "$2" = conftest.file/d'; ./configure"""
+EOF
 fi
 
 echo '
