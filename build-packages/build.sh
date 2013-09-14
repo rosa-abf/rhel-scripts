@@ -97,9 +97,6 @@ if [ "$platform_name" == 'fedora18' ] ; then
   echo "fedora18_everything_release http://abf-downloads.rosalinux.ru/fedora18/repository/$platform_arch/everything/release" >> $media_list
 fi
 if [ "$platform_name" == 'rosa-sx-chrome-1.0' ] ; then
-  # TODO: remove when "base" repository will be rebuilt
-  echo "rosa-server2012_base_release http://abf-downloads.rosalinux.ru/rosa-server2012/repository/$platform_arch/base/release" >> $media_list
-  echo "rosa-server2012_extra_release http://abf-downloads.rosalinux.ru/rosa-server2012/repository/$platform_arch/extra/release" >> $media_list
 fi
 
 echo '
