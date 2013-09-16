@@ -37,7 +37,7 @@ repository_path=$platform_path
 # override below if need
 use_debug_repo='false'
 
-if [ "$platform_name" == 'rosa-server7' ] ; then
+if [ "$build_for_platform" == 'rosa-server7' ] ; then
   use_debug_repo='true'
 fi
 
