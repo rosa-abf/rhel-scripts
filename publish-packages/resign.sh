@@ -35,8 +35,12 @@ function resign_all_rpm_in_folder {
 
 for arch in SRPMS i586 x86_64 ; do
   for rep in release updates ; do
-    resign_all_rpm_in_folder "$repository_path/$arch/$rep_name/$rep"
+    resign_all_rpm_in_folder "$repository_path/$arch/$rep_name/$rep" &
+    resign_all_rpm_in_folder "$repository_path/$arch/debug_$rep_name/$rep" &
   done
 done
+
+# Waiting for resign_all_rpm_in_folder...
+wait
 
 exit 0
