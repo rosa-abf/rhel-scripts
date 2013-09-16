@@ -276,7 +276,7 @@ done
 # Check exit code after build and rollback
 if [ $rc != 0 ] ; then
   cd $script_path/
-  RELEASED=$released REPOSITORY_NAME=$rep_name USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
+  RELEASED=$released REPOSITORY_NAME=$rep_name BUILD_FOR_PLATFORM=$build_for_platform USE_FILE_STORE=false /bin/bash $script_path/rollback.sh
 else
   for arch in $arches ; do
     main_folder=$repository_path/$arch/$rep_name

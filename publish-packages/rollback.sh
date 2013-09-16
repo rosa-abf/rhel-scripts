@@ -4,6 +4,7 @@ echo '--> rhel-scripts/publish-packages: rollback.sh'
 
 released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
+build_for_platform="$BUILD_FOR_PLATFORM"
 use_file_store="$USE_FILE_STORE"
 
 echo "RELEASED = $released"
@@ -20,7 +21,7 @@ repository_path=/home/vagrant/share_folder
 # override below if need
 use_debug_repo='false'
 
-if [ "$platform_name" == 'rosa-server7' ] ; then
+if [ "$build_for_platform" == 'rosa-server7' ] ; then
   use_debug_repo='true'
 fi
 
