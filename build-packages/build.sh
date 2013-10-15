@@ -27,11 +27,13 @@ rpm_build_script_path=`pwd`
 sudo rm -rf $archives_path $results_path $tmpfs_path $project_path
 mkdir  $archives_path $results_path $tmpfs_path $project_path
 
+sudo chown vagrant:vagrant -R /home/vagrant
+
 # Mount tmpfs
 # 'mock' of fedora18 does not support tmpfs
-if [ "$platform_name" != 'fedora18' ] ; then
-  sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
-fi
+# if [ "$platform_name" != 'fedora18' ] ; then
+#   sudo mount -t tmpfs tmpfs -o size=30000M,nr_inodes=10M $tmpfs_path
+# fi
 
 # Download project
 # Fix for: 'fatal: index-pack failed'
@@ -229,9 +231,9 @@ fi
 # Umount tmpfs
 cd /
 # 'mock' of fedora18 does not support tmpfs
-if [ "$platform_name" != 'fedora18' ] ; then
-  sudo umount $tmpfs_path
-fi
+# if [ "$platform_name" != 'fedora18' ] ; then
+#   sudo umount $tmpfs_path
+# fi
 sudo rm -rf $tmpfs_path
 
 
