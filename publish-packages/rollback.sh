@@ -6,7 +6,9 @@ released="$RELEASED"
 rep_name="$REPOSITORY_NAME"
 build_for_platform="$BUILD_FOR_PLATFORM"
 use_file_store="$USE_FILE_STORE"
+testing="$TESTING"
 
+echo "TESTING = $testing"
 echo "RELEASED = $released"
 echo "REPOSITORY_NAME = $rep_name"
 
@@ -28,6 +30,9 @@ fi
 status='release'
 if [ "$released" == 'true' ] ; then
   status='updates'
+fi
+if [ "$testing" == 'true' ] ; then
+  status='testing'
 fi
 
 arches="SRPMS i586 x86_64"
