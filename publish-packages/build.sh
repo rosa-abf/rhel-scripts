@@ -134,6 +134,31 @@ if [ $rep_locked != 0 ] ; then
   exit 1
 fi
 
+# Ensures that all packages exist
+file_store_url='http://file-store.rosalinux.ru/api/v1/file_stores.json'
+all_packages_exist=0
+for arch in $arches ; do
+  new_packages="$container_path/new.$arch.list"
+  if [ -f "$new_packages" ]; then
+    for sha1 in `cat $new_packages` ; do
+      r=`curl ${file_store_url}?hash=${sha1}`
+      if [ "$r" == '[]' ] ; then
+        echo "--> Package with sha1 '$sha1' for $arch does not exist!!!"
+        all_packages_exist=1
+      fi
+    done
+  fi
+done
+# Fails publishing if some packages does not exist
+if [ $all_packages_exist != 0 ] ; then
+  # Unlocks repository for sync
+  for arch in $arches ; do
+    rm -f $repository_path/$arch/$rep_name/.publish.lock
+  done
+  echo "--> [`LANG=en_US.UTF-8  date -u`] ERROR: some packages does not exist"
+  exit 1
+fi
+
 file_store_url='http://file-store.rosalinux.ru/api/v1/file_stores'
 for arch in $arches ; do
   update_repo=0
