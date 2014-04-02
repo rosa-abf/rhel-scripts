@@ -27,8 +27,8 @@ rpm_build_script_path=`pwd`
 # !!!!!
 /bin/bash $rpm_build_script_path/../startup-vm/startup.sh
 
-sudo rm -rf $archives_path $results_path $tmpfs_path $project_path
-mkdir  $archives_path $results_path $tmpfs_path $project_path
+sudo rm -rf $archives_path $results_path $tmpfs_path
+mkdir  $archives_path $results_path $tmpfs_path
 
 sudo chown vagrant:vagrant -R /home/vagrant
 
@@ -41,7 +41,30 @@ sudo chown vagrant:vagrant -R /home/vagrant
 # Download project
 # Fix for: 'fatal: index-pack failed'
 git config --global core.compression -1
-git clone $git_project_address $project_path
+
+# We will rerun the git clone in case when something wrong,
+# but for safety let's limit number of retest attempts
+MAX_RETRIES=5
+WAIT_TIME=10
+try_reclone=true
+retry=0
+while $try_reclone
+do
+  sudo rm -rf $project_path
+  mkdir $project_path
+  git clone $git_project_address $project_path
+  rc=$?
+  try_reclone=false
+  if [[ $rc != 0 && $retry < $MAX_RETRIES ]] ; then
+    try_reclone=true
+    (( retry=$retry+1 ))
+    echo "--> Something wrong with git repository, next try (${retry} from ${MAX_RETRIES})..."
+    echo "--> Delay ${WAIT_TIME} sec..."
+    sleep $WAIT_TIME
+  fi
+done
+
+
 cd $project_path
 git submodule update --init
 git remote rm origin
