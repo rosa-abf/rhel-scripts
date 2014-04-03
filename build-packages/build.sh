@@ -48,11 +48,26 @@ MAX_RETRIES=5
 WAIT_TIME=10
 try_reclone=true
 retry=0
+
+# Hook for: error: RPC failed; result=22, HTTP code = 401
+git_clone_log=$tmpfs_path/git_clone.tmp
+do_subshell=true
+(
+  while [ $do_subshell ] ; do
+    sleep 5
+    if grep -q "HTTP code =" $git_clone_log; then
+      for id in `ps aux | grep git | grep -v grep | awk '{ print $2 }'` ; do
+        kill -9 $id
+      done
+    fi
+  done
+) & subshellpid=$!
+
 while $try_reclone
 do
   sudo rm -rf $project_path
   mkdir $project_path
-  git clone $git_project_address $project_path
+  git clone $git_project_address $project_path > $git_clone_log 2>&1
   rc=$?
   try_reclone=false
   if [[ $rc != 0 && $retry < $MAX_RETRIES ]] ; then
@@ -63,6 +78,10 @@ do
     sleep $WAIT_TIME
   fi
 done
+kill $subshellpid
+do_subshell=false
+cat $git_clone_log
+rm -f $git_clone_log
 
 
 cd $project_path
