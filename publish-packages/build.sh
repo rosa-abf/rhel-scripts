@@ -93,9 +93,9 @@ function build_repo {
 
   # resign all packages
   # temporally
-  start_sign_rpms='1'
+  start_sign_rpms='0'
   if [ "$regenerate" == 'true' ]; then
-    if [ "$start_sign_rpms" == '1' ] && [ "$arch" == 'i586' ] ; then
+    if [ "$start_sign_rpms" == '1' ] ; then
       echo "--> Starting to sign rpms in '$path'"
       # evil lo0pz
       # for i in `ls -1 $path/*.rpm`; do
