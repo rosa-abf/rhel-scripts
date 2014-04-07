@@ -89,6 +89,43 @@ function build_repo {
   path=$1
   arch=$2
   regenerate=$3
+
+
+  # resign all packages
+  # temporally
+  start_sign_rpms='1'
+  if [ "$regenerate" == 'true' ]; then
+    if [ "$start_sign_rpms" == '1' ] ; then
+      echo "--> Starting to sign rpms in '$path'"
+      # evil lo0pz
+      # for i in `ls -1 $path/*.rpm`; do
+      for i in `find $path -name '*.rpm'`; do
+
+        has_key=`rpm -Kv $i | grep 'key ID' | grep "$key_name"`
+        if [ "$has_key" == '' ] ; then
+          chmod 0666 $i;
+          rpm --resign $i;
+          # Save exit code
+          rc=$?
+          chmod 0644 $i;
+
+          if [[ $rc == 0 ]] ; then
+            echo "--> Packages in '$i' has been signed successfully."
+          else
+            echo "--> Packages in '$i' has not been signed successfully!!!"
+          fi
+
+        else
+          echo "--> Package '$i' already signed"
+        fi
+
+      done
+    else
+      echo "--> RPM signing is disabled"
+    fi
+  fi
+
+
   # Build repo
   tmp_dir="/home/vagrant/tmp-$arch"
   rm -rf $tmp_dir $path/.olddata
