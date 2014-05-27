@@ -12,6 +12,8 @@ uname="$UNAME"
 email="$EMAIL"
 platform_name="$PLATFORM_NAME"
 platform_arch="$ARCH"
+rerun_tests=${RERUN_TESTS}
+packages=${PACKAGES}
 
 echo $git_project_address | awk '{ gsub(/\:\/\/.*\:\@/, "://[FILTERED]@"); print }'
 echo $commit_hash
@@ -196,6 +198,20 @@ sudo ln -s $default_cfg $config_dir/default.cfg
 echo "--> Mock configs $config_dir/default.cfg"
 cat $config_dir/default.cfg
 
+# Rerun tests
+if [ "${rerun_tests}" == 'true' ] ; then
+  RERUN_TESTS=${rerun_tests} \
+    PACKAGES=${packages} \
+    /bin/bash $rpm_build_script_path/tests.sh
+  # Save exit code
+  rc=$?
+  if [ ${rc} != 0 ] ; then
+    echo '--> Test failed, see: tests.log'
+    exit 5
+  fi
+  exit 0
+fi
+
 # Build src.rpm
 echo '--> Build src.rpm'
 mock --buildsrpm --spec $tmpfs_path/SPECS/$spec_name --sources $tmpfs_path/SOURCES/ --resultdir $src_rpm_path --configdir $config_dir -v --no-cleanup-after
@@ -242,46 +258,12 @@ if [ "$src_rpm_name" != '' ] ; then
   rm $rpm_path/*.src.rpm
 fi
 
-r=`head -1 $config_dir/default.cfg |
-  sed -e "s/config_opts//g" |
-  sed -e "s/\[//g" |
-  sed -e "s/\]//g" |
-  sed -e "s/root//g" |
-  sed -e "s/=//g" |
-  sed -e "s/'//g"|
-  sed -e "s/ //g"`
-chroot_path=$tmpfs_path/$r/root
-echo '--> Checking internet connection...'
-sudo chroot $chroot_path ping -c 1 google.com
-
 # Tests
-test_log=$results_path/tests.log
-test_root=$tmpfs_path/test-root
-test_code=0
-rpm -qa --queryformat "%{name}-%{version}-%{release}.%{arch}.%{disttag}%{distepoch}\n" --root $chroot_path >> $results_path/rpm-qa.log
-if [ $rc == 0 ] ; then
-  ls -la $rpm_path/ >> $test_log
-  sudo yum -v --installroot=$chroot_path install -y $rpm_path/*.rpm >> $test_log 2>&1
-  test_code=$?
-  rm -rf $test_root
-fi
-
-if [ $rc == 0 ] && [ $test_code == 0 ] ; then
-  ls -la $src_rpm_path/ >> $test_log
-fi
-
-if [ $rc != 0 ] || [ $test_code != 0 ] ; then
-  tree $chroot_path/builddir/build/ >> $results_path/chroot-tree.log
-fi
-
-# Umount tmpfs
-cd /
-# 'mock' of fedora18 does not support tmpfs
-# if [ "$platform_name" != 'fedora18' ] ; then
-#   sudo umount $tmpfs_path
-# fi
-sudo rm -rf $tmpfs_path
-
+RERUN_TESTS='false' \
+  RC=${rc} \
+  RPM_PATH=${rpm_path} \
+  /bin/bash $rpm_build_script_path/tests.sh
+test_code=$?
 
 move_logs $rpm_path 'rpm'
 
