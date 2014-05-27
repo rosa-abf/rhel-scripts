@@ -38,7 +38,7 @@ if [ "${rerun_tests}" == 'true' ] ; then
     echo "--> Downloading '${package}'..."
     wget http://file-store.rosalinux.ru/api/v1/file_stores/${package} --content-disposition --no-check-certificate
   done
-  sudo mock --init --configdir ${config_dir} -v --no-cleanup-after --no-clean
+  mock --init --configdir ${config_dir} -v --no-cleanup-after --no-clean
 fi
 
 # Tests
