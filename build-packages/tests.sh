@@ -36,19 +36,17 @@ if [ "${rerun_tests}" == 'true' ] ; then
     echo "--> Downloading '${package}'..."
     wget http://file-store.rosalinux.ru/api/v1/file_stores/${package} --content-disposition --no-check-certificate
   done
-  mock --init --configdir ${config_dir} -v --no-cleanup-after --no-clean
+  sudo mock --init --configdir ${config_dir} -v --no-cleanup-after --no-clean
 fi
 
 # Tests
 test_log=${results_path}/tests.log
-test_root=${tmpfs_path}/test-root
 test_code=0
 rpm -qa --queryformat "%{name}-%{version}-%{release}.%{arch}.%{disttag}%{distepoch}\n" --root ${chroot_path} >> ${results_path}/rpm-qa.log
 if [ ${rc} == 0 ] ; then
   ls -la ${rpm_path}/ >> ${test_log}
   sudo yum -v --installroot=${chroot_path} install -y ${rpm_path}/*.rpm >> ${test_log} 2>&1
   test_code=$?
-  rm -rf ${test_root}
 fi
 
 if [ ${rc} == 0 ] && [ ${test_code} == 0 ] ; then

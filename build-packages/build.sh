@@ -85,36 +85,38 @@ do_subshell=false
 cat $git_clone_log
 rm -f $git_clone_log
 
+if [ "${rerun_tests}" != 'true' ] ; then
+  cd $project_path
+  git submodule update --init
+  git remote rm origin
+  git checkout $commit_hash
 
-cd $project_path
-git submodule update --init
-git remote rm origin
-git checkout $commit_hash
+  # TODO: build changelog
 
-# TODO: build changelog
+  # Downloads extra files by .abf.yml
+  ruby $rpm_build_script_path/abf_yml.rb -p $project_path
 
-# Downloads extra files by .abf.yml
-ruby $rpm_build_script_path/abf_yml.rb -p $project_path
-
-# Remove .git folder
-rm -rf $project_path/.git
+  # Remove .git folder
+  rm -rf $project_path/.git
 
 
-# create SPECS folder and move *.spec
-mkdir $tmpfs_path/SPECS
-mv $project_path/*.spec $tmpfs_path/SPECS/
-# Check count of *.spec files (should be one)
-cd $tmpfs_path/SPECS
-x=`ls -1 | grep '.spec$' | wc -l | sed 's/^ *//' | sed 's/ *$//'`
-spec_name=`ls -1 | grep '.spec$'`
-if [ $x -eq '0' ] ; then
-  echo '--> There are no spec files in repository.'
-  exit 1
-else
-  if [ $x -ne '1' ] ; then
-    echo '--> There are more than one spec file in repository.'
+  # create SPECS folder and move *.spec
+  mkdir $tmpfs_path/SPECS
+  mv $project_path/*.spec $tmpfs_path/SPECS/
+  # Check count of *.spec files (should be one)
+  cd $tmpfs_path/SPECS
+  x=`ls -1 | grep '.spec$' | wc -l | sed 's/^ *//' | sed 's/ *$//'`
+  spec_name=`ls -1 | grep '.spec$'`
+  if [ $x -eq '0' ] ; then
+    echo '--> There are no spec files in repository.'
     exit 1
+  else
+    if [ $x -ne '1' ] ; then
+      echo '--> There are more than one spec file in repository.'
+      exit 1
+    fi
   fi
+
 fi
 
 #create SOURCES folder and move src
