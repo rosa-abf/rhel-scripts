@@ -10,6 +10,7 @@ rpm_path=${RPM_PATH}
 results_path=/home/vagrant/results
 tmpfs_path=/home/vagrant/tmpfs
 config_dir=/etc/mock/
+prefix=''
 
 r=`head -1 ${config_dir}/default.cfg |
   sed -e "s/config_opts//g" |
@@ -26,6 +27,7 @@ sudo chroot $chroot_path ping -c 1 google.com
 if [ "${rerun_tests}" == 'true' ] ; then
   [[ "${packages}" == '' ]] && echo '--> No packages!!!' && exit 1
 
+  prefix='rerun-tests-'
   rc=0
   rpm_path=${tmpfs_path}/RPM
   mkdir -p ${rpm_path}
@@ -40,9 +42,9 @@ if [ "${rerun_tests}" == 'true' ] ; then
 fi
 
 # Tests
-test_log=${results_path}/tests.log
+test_log=${results_path}/${prefix}tests.log
 test_code=0
-rpm -qa --queryformat "%{name}-%{version}-%{release}.%{arch}.%{disttag}%{distepoch}\n" --root ${chroot_path} >> ${results_path}/rpm-qa.log
+rpm -qa --queryformat "%{name}-%{version}-%{release}.%{arch}.%{disttag}%{distepoch}\n" --root ${chroot_path} >> ${results_path}/${prefix}rpm-qa.log
 if [ ${rc} == 0 ] ; then
   ls -la ${rpm_path}/ >> ${test_log}
   sudo yum -v --installroot=${chroot_path} install -y ${rpm_path}/*.rpm >> ${test_log} 2>&1
@@ -54,7 +56,7 @@ if [ ${rc} == 0 ] && [ ${test_code} == 0 ] ; then
 fi
 
 if [ ${rc} != 0 ] || [ ${test_code} != 0 ] ; then
-  tree ${chroot_path}/builddir/build/ >> ${results_path}/chroot-tree.log
+  tree ${chroot_path}/builddir/build/ >> ${results_path}/${prefix}chroot-tree.log
 fi
 
 # Umount tmpfs
