@@ -89,6 +89,43 @@ function build_repo {
   path=$1
   arch=$2
   regenerate=$3
+
+
+  # resign all packages
+  # temporally
+  start_sign_rpms='0'
+  if [ "$regenerate" == 'true' ]; then
+    if [ "$start_sign_rpms" == '1' ] ; then
+      echo "--> Starting to sign rpms in '$path'"
+      # evil lo0pz
+      # for i in `ls -1 $path/*.rpm`; do
+      for i in `find $path -name '*.rpm'`; do
+
+        has_key=`rpm -Kv $i | grep 'key ID' | grep "$key_name"`
+        if [ "$has_key" == '' ] ; then
+          chmod 0666 $i;
+          rpm --resign $i;
+          # Save exit code
+          rc=$?
+          chmod 0644 $i;
+
+          if [[ $rc == 0 ]] ; then
+            echo "--> Packages in '$i' has been signed successfully."
+          else
+            echo "--> Packages in '$i' has not been signed successfully!!!"
+          fi
+
+        else
+          echo "--> Package '$i' already signed"
+        fi
+
+      done
+    else
+      echo "--> RPM signing is disabled"
+    fi
+  fi
+
+
   # Build repo
   tmp_dir="/home/vagrant/tmp-$arch"
   rm -rf $tmp_dir $path/.olddata
@@ -131,6 +168,31 @@ if [ $rep_locked != 0 ] ; then
     rm -f $repository_path/$arch/$rep_name/.publish.lock
   done
   echo "--> [`LANG=en_US.UTF-8  date -u`] ERROR: Mirror is currently synchronising the repository state."
+  exit 1
+fi
+
+# Ensures that all packages exist
+file_store_url='http://file-store.rosalinux.ru/api/v1/file_stores.json'
+all_packages_exist=0
+for arch in $arches ; do
+  new_packages="$container_path/new.$arch.list"
+  if [ -f "$new_packages" ]; then
+    for sha1 in `cat $new_packages` ; do
+      r=`curl ${file_store_url}?hash=${sha1}`
+      if [ "$r" == '[]' ] ; then
+        echo "--> Package with sha1 '$sha1' for $arch does not exist!!!"
+        all_packages_exist=1
+      fi
+    done
+  fi
+done
+# Fails publishing if some packages does not exist
+if [ $all_packages_exist != 0 ] ; then
+  # Unlocks repository for sync
+  for arch in $arches ; do
+    rm -f $repository_path/$arch/$rep_name/.publish.lock
+  done
+  echo "--> [`LANG=en_US.UTF-8  date -u`] ERROR: some packages does not exist"
   exit 1
 fi
 
