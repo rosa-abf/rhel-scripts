@@ -14,6 +14,7 @@ platform_name="$PLATFORM_NAME"
 platform_arch="$ARCH"
 rerun_tests=${RERUN_TESTS}
 packages=${PACKAGES}
+save_buildroot=${SAVE_BUILDROOT}
 
 echo $git_project_address | awk '{ gsub(/\:\/\/.*\:\@/, "://[FILTERED]@"); print }'
 echo $commit_hash
@@ -268,6 +269,12 @@ RERUN_TESTS='false' \
 test_code=$?
 
 move_logs $rpm_path 'rpm'
+
+if [[ ${rc} != 0 && ${save_buildroot} == 'true' ]] ; then
+  r=`cat ${config_dir}/default.cfg | grep "config_opts\['root']" | awk '{ print $3 }' | sed "s/'//g"`
+  chroot_path=${tmpfs_path}/${r}/root
+  sudo tar --exclude=root/dev -zcvf ${results_path}/rpm-buildroot.tar.gz ${chroot_path}
+fi
 
 # Check exit code after build
 if [ $rc != 0 ] ; then
