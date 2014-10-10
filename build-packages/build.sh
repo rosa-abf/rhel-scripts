@@ -178,8 +178,8 @@ gpgcheck=0
 assumeyes=1
 syslog_ident=mock
 syslog_device=
-timeout=300 # default is 30
-minrate=100 # default is 1000
+timeout=300
+minrate=100
 
 # repos
   ' >> $default_cfg
