@@ -180,6 +180,7 @@ syslog_ident=mock
 syslog_device=
 timeout=300
 minrate=100
+proxy=http://85.10.197.177:3128
 
 # repos
   ' >> $default_cfg
