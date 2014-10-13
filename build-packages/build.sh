@@ -161,7 +161,7 @@ config_opts['use_host_resolv'] = False
 EOF
 # Patch configure
 cat <<"EOF">> $default_cfg
-config_opts['macros']['%_configure'] = """sed -i configure -e '/test "$2" = conftest.file/d'; ./configure"""
+config_opts['macros']['%_configure'] = """sed -i configure -e '/  test "$2" = conftest.file/d'; ./configure"""
 EOF
 fi
 
