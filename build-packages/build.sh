@@ -251,6 +251,9 @@ if [ $rc != 0 ] ; then
   exit 1
 fi
 
+# Increase max file descriptors limit to build really large packages
+ulimit -n 15000
+
 # Build rpm
 cd $src_rpm_path
 src_rpm_name=`ls -1 | grep 'src.rpm$'`
